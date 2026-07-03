@@ -893,7 +893,11 @@ input[type="text"] {
    BID MODAL
 ======================================================= */
 
-.bid-modal{
+.game-dialog.hidden{
+    display:none;
+}
+
+.game-dialog{
     width:100%;
     max-width:340px;
     margin:auto;
@@ -904,11 +908,7 @@ input[type="text"] {
     z-index:9999;
 }
 
-.bid-modal.hidden{
-    display:none;
-}
-
-.bid-box{
+.dialog-box{
     width:380px;
     max-width:95vw;
     background:linear-gradient(
@@ -922,33 +922,47 @@ input[type="text"] {
     box-shadow:0 20px 60px rgba(0,0,0,.45);
 }
 
-.bid-title{
+
+#gameDialog{
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(calc(-50% - 30px), calc(-50% + 30px));
+    z-index:9999;
+}
+
+#gameDialog.hidden{
+    display:none;
+}
+
+
+.dialog-title{
     text-align:center;
     font-size:16px;
     font-weight:700;
     margin-bottom:20px;
 }
 
-.bid-player{
+.dialog-player{
     text-align:center;
     font-size:18px;
     font-weight:700;
     margin-bottom:20px;
 }
 
-.bid-buttons{
+.dialog-buttons{
     display:flex;
     flex-wrap:wrap;
     justify-content:center;
     gap:10px;
 }
 
-.bid-buttons button{
+.dialog-buttons button{
     min-width:42px;
     height:40px;
 }
 
-.bid-buttons button.pass{
+.dialog-buttons button.pass{
     min-width:56px;
     border-color:#ff7d7d;
 }
@@ -1390,21 +1404,23 @@ input[type="text"] {
 
 </div>
 
-<div id="bidPanel" class="bid-modal hidden">
+<!-- ===== OYUN İÇİ DİYALOG BAŞLANGIÇ ===== -->
+<div id="gameDialog" class="game-dialog hidden">
 
-    <div class="bid-box">
+    <div class="dialog-box">
 
-        <div class="bid-title" id="mandatorySeven"></div>
+        <div class="dialog-title" id="mandatorySeven"></div>
 
-        <div class="bid-player" id="bidPlayerName">
+        <div class="dialog-player" id="bidPlayerName">
             Batı teklif seç
         </div>
 
-        <div class="bid-buttons" id="bidButtons"></div>
+        <div class="dialog-buttons" id="bidButtons"></div>
 
     </div>
 
 </div>
+<!-- ===== OYUN İÇİ DİYALOG BİTİŞ ===== -->
 
 <div class="toast" id="toast"></div>
 
@@ -2014,8 +2030,8 @@ function openBidModal(){
     render(); // BUNU EKLE
 
     document
-        .getElementById("bidPanel")
-        .classList.remove("hidden");
+    .getElementById("gameDialog")
+    .classList.remove("hidden");
 
     renderBidOptions();
 }
@@ -2268,7 +2284,7 @@ function finishBid(){
     state.revealedSeat = null;
 
     document
-    .getElementById("bidPanel")
+    .getElementById("gameDialog")
     .classList.add("hidden");
 
     const winner =
