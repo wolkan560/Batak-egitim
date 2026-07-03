@@ -1,0 +1,3318 @@
+<!DOCTYPE html>
+
+<!--
+==========================================================
+ Batak Eğitim Masası
+----------------------------------------------------------
+ Version : v6.0
+ Status  : Development
+
+ Author  : Volkan Aydoğan
+
+==========================================================
+ SÜRÜM NOTLARI
+==========================================================
+
+DONE v6.0
+✓ Maç sistemi eklendi
+✓ Maç sonu popup eklendi
+✓ Yeni Maç sistemi
+✓ Maç puan tablosu
+✓ Hedef puan sistemi
+✓ Uzatma eli sistemi
+✓ Son kart bekleme süresi
+✓ Bekleme sırasında kart oynama kilidi
+✔ Üst başlıktaki açıklama metni kaldırıldı.
+✔ Topbar daha kompakt hale getirildi.
+✔ Hamle Geçmişi kaldırıldı.
+✔ Yerine Geliştirme Günlüğü eklendi.
+✔ Kullanılmayan renderLog() sistemi temizlendi.
+✔ Kod mimarisi tamamen yeniden düzenlendi.
+✔ Fonksiyonlar kategorilere ayrıldı.
+✔ HTML, CSS ve JavaScript bölümleri temizlendi.
+✔ Render sistemi sadeleştirildi.
+✔ Save / Load sistemi yeniden düzenlendi.
+✔ Sabit Dağıt özelliği eklendi.
+✔ Elleri Yer Değiştir özelliği eklendi.
+✔ İhale sistemi altyapısı tamamlandı.
+✔ Skor sistemi geliştirildi.
+✔ 41'de biter kuralı eklendi.
+✔ Geliştirme Günlüğü paneli eklendi.
+✔ Gereksiz üst bilgi alanları kaldırıldı.
+✔ Takım A / Takım B etiketleri kaldırıldı.
+✔ Başlangıç bilgileri sadeleştirildi.
+✔ Oyuncu adı düzenleme paneli kaldırıldı.
+✔ Açıklama paneli kaldırıldı.
+✔ 1080p tam ekran görünümü optimize edildi.
+✔ 1080p pencere modu büyük ölçüde optimize edildi.
+✔ Arayüz daha ferah ve gerçek masa görünümüne yaklaştırıldı.
+
+TODO v6.0
+□ Responsive düzen tamamlanacak.
+□ Sağ panel optimize edilecek.
+□ 1080p görünümü iyileştirilecek.
+
+==========================================================
+-->
+
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batak Eğitim Masası</title>
+  <style>
+
+/* =======================================================
+   DONE v6.0
+----------------------------------------------------------
+   - Üst başlıktaki açıklama metni kaldırıldı.
+   - Topbar daha kompakt hale getirildi.
+======================================================= */
+
+/* =======================================================
+   ROOT
+======================================================= */
+    :root{
+      --bg: rgba(10, 14, 24, 0.92);
+      --panel: rgba(20, 28, 44, 0.92);
+      --panel2: rgba(12, 18, 30, 0.88);
+      --line: rgba(255,255,255,0.10);
+      --text: #f3f7ff;
+      --muted: rgba(243,247,255,0.68);
+      --accent: #6ee7ff;
+      --accent2: #8bffb0;
+      --danger: #ff6b6b;
+      --warn: #ffd166;
+      --card: #f7f7fb;
+      --cardText: #111827;
+      --shadow: 0 12px 34px rgba(0,0,0,.35);
+      --radius: 18px;
+      --good: #7cf2a4;
+      --bad: #ff8f8f;
+      --current: #ffd166;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(110,231,255,.08), transparent 30%),
+        radial-gradient(circle at 80% 10%, rgba(139,255,176,.08), transparent 28%),
+        radial-gradient(circle at 50% 80%, rgba(255,209,102,.06), transparent 35%),
+        var(--bg);
+      overflow: hidden;
+    }
+
+
+
+/* =======================================================
+   APP LAYOUT
+======================================================= */
+
+
+    .app {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      padding: 14px;
+    }
+
+
+/* =======================================================
+   TOP BAR
+======================================================= */
+
+    .topbar, .bottombar, .sidepanel, .center, .seat {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding:10px 12px;
+      background: linear-gradient(180deg, rgba(24,33,52,.96), rgba(17,24,39,.88));
+    }
+
+    .title {
+    min-width: 220px;
+}
+
+    .title h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: .3px;
+    }
+
+
+    .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+button,
+select,
+input[type="text"] {
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
+    outline: none;
+}
+
+
+#leaderSelect,
+#trumpSelect{
+    appearance: auto;
+    -webkit-appearance: auto;
+
+    background-color: #1b2235;
+    color: #f3f7ff;
+    border: 1px solid rgba(255,255,255,.15);
+}
+
+#leaderSelect option,
+#trumpSelect option{
+    background-color: #ffffff;
+    color: #000000;
+}
+
+
+
+
+    button {
+      cursor: pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select: none;
+    }
+    button:hover { background: rgba(255,255,255,0.10); }
+    button:active { transform: translateY(1px); }
+    button.primary {
+      background: linear-gradient(135deg, rgba(110,231,255,.20), rgba(139,255,176,.18));
+      border-color: rgba(110,231,255,.35);
+    }
+    button.danger {
+      background: rgba(255,107,107,.14);
+      border-color: rgba(255,107,107,.35);
+    }
+    button.ghost {
+      background: rgba(255,255,255,0.04);
+    }
+
+
+
+/* =======================================================
+   LAYOUT
+======================================================= */
+
+.layout{
+    display:grid;
+    grid-template-columns:240px minmax(0,1fr) 300px;
+    gap:12px;
+    min-height:0;
+}
+
+
+
+/* =======================================================
+   SIDEPANEL
+======================================================= */
+    .sidepanel{
+    display:grid;
+    grid-template-rows:auto auto 1fr;
+    gap:8px;
+    min-height:0;
+}
+
+
+ .sidepanel h2 {
+    font-size: 13px;
+}
+
+.sidepanel button,
+.sidepanel input {
+    font-size: 12px;
+    padding: 6px 8px;
+}
+
+.saved-item .name,
+.log-item,
+.mini {
+    font-size: 11px;
+}
+
+
+.seat-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+
+.team-score {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffd166;
+    margin-top: 6px;
+}
+
+
+.pill {
+    padding: 6px 13px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text);
+    font-size: 11px;
+}
+
+    .pill strong { color: white; }
+    .pill.current { border-color: rgba(255,209,102,0.45); background: rgba(255,209,102,0.10); }
+    .pill.good { border-color: rgba(124,242,164,0.38); background: rgba(124,242,164,0.10); }
+    .pill.bad { border-color: rgba(255,107,107,0.38); background: rgba(255,107,107,0.10); 
+}
+
+
+
+/* =======================================================
+   TABLE
+======================================================= */
+
+    .statusbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(24,33,52,.92), rgba(16,24,38,.88));
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-left,
+    .status-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+}
+
+
+ 
+/* =======================================================
+   BOARD
+======================================================= */
+
+  .board {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 12px;
+    min-height: 100%;
+}
+
+
+/* =======================================================
+   PLAYERS
+======================================================= */
+
+    .players {
+    display: grid;
+    grid-template-columns: 420px 420px 420px;
+    justify-content: center;
+    gap: 20px;
+    min-height: 0;
+    align-items: center;
+}
+
+    .stack {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      min-height: 0;
+    }
+
+
+/* =======================================================
+   SEATS
+======================================================= */
+
+   .seat {
+  background: linear-gradient(180deg, rgba(24,33,52,.92), rgba(14,19,32,.92));
+  height: 100%;
+  padding: 12px;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10),
+      0 0 15px rgba(255,255,255,0.12),
+      var(--shadow);
+}
+
+#seat1,
+#seat3 {
+    min-height: 240px;
+    width: 35%;
+    margin: 0 auto;
+    align-self: stretch;
+}
+
+
+#seat2,
+#seat4 {
+    min-height: 240px;
+    width: 100%;
+}
+
+#seat1,
+#seat2,
+#seat3,
+#seat4 {
+    height: 100%;
+}
+
+    .seat-header {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  align-items: center;
+}
+
+    .seat-name {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .seat-name .name {
+    font-size: 10px;   /* çok küçük */
+    font-weight: 600;
+    text-align: left;
+    }
+    .seat-name .team {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+
+
+    .count {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+   .hand {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;   /* yatay ortala */
+    align-content: center;     /* dikey ortala */
+    min-height: 110px;
+    overflow: auto;
+    padding-right: 2px;
+}
+
+ 
+
+
+
+/* =======================================================
+   CARDS
+======================================================= */
+
+
+.card {
+      width: 44px;
+      height: 58px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff, #eef2ff);
+      color: var(--cardText);
+      border: 1px solid rgba(0,0,0,0.08);
+     box-shadow:
+    0 7px 16px rgba(0,0,0,.18),
+    0 0 12px rgba(255,255,255,0.35);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 7px 6px;
+      font-weight: 700;
+      user-select: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform .09s ease, box-shadow .12s ease, opacity .2s ease;
+    }
+
+
+    .card-back{
+      width:44px;height:58px;border-radius:12px;
+      background:linear-gradient(135deg,#334155,#0f172a);
+      border:1px solid rgba(255,255,255,.15);
+}
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(0,0,0,.22);
+    }
+
+    .card:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .card.red { color: #d62222; }
+    .card.black { color: #111827; }
+    /* Maça */
+.card.suit-S {
+    color: #111827;
+}
+
+/* Kupa */
+.card.suit-H {
+    color: #d62222;
+}
+
+/* Karo */
+.card.suit-D {
+    color: #ff8c00;
+}
+
+/* Sinek */
+.card.suit-C {
+    color: #2196f3;
+}
+
+
+    .card .corner {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1;
+      font-size: 14px;
+    }
+    .card .suit {
+      font-size: 16px;
+      text-align: right;
+    }
+    .card .rank {
+      font-size: 15px;
+    }
+
+    .card.small {
+      width: 40px;
+      height: 58px;
+      font-size: 12px;
+    }
+
+
+/* =======================================================
+   PLAYED AREA
+======================================================= */
+
+
+    .played-area {
+    background: linear-gradient(180deg, rgba(16,24,38,.95), rgba(10,14,24,.95));
+    border-radius: var(--radius);
+    border: 1px dashed rgba(255,255,255,0.14);
+    min-height: 180px;
+    padding: 10px;
+    gap: 12px;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    min-height: 160px;
+    padding: 8px;
+    gap: 8px;
+    align-items: center;
+    justify-items: center;
+    position:relative;
+}
+
+   .trick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(70px, 1fr));
+    grid-template-rows: repeat(3, minmax(70px, auto));
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 150px;
+}
+
+    .trick-slot {
+      min-height: 70px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .trick-slot .label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .trick-slot .played {
+      min-width: 52px;
+    }
+
+    .trick-slot.leader {
+      border-color: rgba(110,231,255,0.30);
+      background: rgba(110,231,255,0.08);
+    }
+
+    .trick-slot.winner {
+      border-color: rgba(124,242,164,0.32);
+      background: rgba(124,242,164,0.08);
+    }
+
+    .trick-slot.current {
+      border-color: rgba(255,209,102,0.42);
+      background: rgba(255,209,102,0.10);
+    }
+
+.center-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+}
+
+.teams,
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+
+
+
+/* Legacy - v6.0
+   Kullanım kontrol edilmeden silmeyin. */
+.game-panel{
+    padding:12px;
+    min-height:0;
+    background:linear-gradient(
+        180deg,
+        rgba(24,33,52,.92),
+        rgba(14,19,32,.92)
+    );
+}
+
+
+/* =======================================================
+   PANELS
+======================================================= */
+
+    .panel-box {
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 8px;
+    min-height: 0;
+}
+
+    .panel-box h2{
+    margin:0 0 6px 0;
+    font-size:13px;
+}
+
+    .panel-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.panel-field{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    margin-bottom:8px;
+}
+
+.panel-field select{
+    width:100%;
+}
+
+
+.panel-field label{
+    font-size:12px;
+    color:#bfc7d5;
+    font-weight:600;
+}
+
+
+.saved-list{
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+
+.log{
+    flex:1;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding-right:2px;
+    min-height:0;
+}
+
+    .saved-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding:6px 8px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      align-items: center;
+    }
+
+    .saved-item .name{
+    font-weight:600;
+    font-size:12px;
+}
+
+    .saved-item .info, .log-item {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .log-item {
+      padding:6px 8px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      line-height: 1.35;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 0 4px 2px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+
+.left-panel{
+    width:240px;
+    max-height:800px;
+}
+
+.right-panel{
+    width:300px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+
+/* =======================================================
+   CHANGELOG PANEL
+======================================================= */
+
+.changelog{
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    font-size:12px;
+
+}
+
+.changelog-version{
+
+    color:#ffd166;
+    font-weight:700;
+
+}
+
+.changelog-status{
+
+    color:var(--muted);
+    margin-bottom:6px;
+
+}
+
+.changelog-title{
+
+    color:#8bffb0;
+    font-weight:700;
+    margin-top:8px;
+
+}
+
+.changelog-item{
+
+    padding-left:8px;
+    color:#ddd;
+
+}
+
+
+
+
+/* =======================================================
+   SCORE BOARD
+======================================================= */
+
+.score-board{
+    width:88%;
+    margin:0 auto 16px auto;
+
+    background:rgba(15,20,30,.95);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:12px;
+    padding:12px;
+}
+
+.score-title{
+
+    text-align:center;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    margin-bottom:12px;
+
+    color:#ffd54a;
+}
+
+.score-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:8px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    font-size:15px;
+}
+
+.score-target{
+
+    margin-top:12px;
+
+    text-align:center;
+
+    font-weight:bold;
+
+    color:#8be98b;
+}
+
+/* =======================================================
+   TOAST
+======================================================= */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(12,18,30,0.96);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 30;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .legend span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .mini {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .inline-input{
+    width:80px;
+}
+
+    .hidden {
+      display: none !important;
+    }
+
+
+
+
+
+/* =======================================================
+   BID MODAL
+======================================================= */
+
+.bid-modal{
+    width:100%;
+    max-width:340px;
+    margin:auto;
+    background:rgba(0,0,0,.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+.bid-modal.hidden{
+    display:none;
+}
+
+.bid-box{
+    width:380px;
+    max-width:95vw;
+    background:linear-gradient(
+        180deg,
+        rgba(24,33,52,.98),
+        rgba(14,19,32,.98)
+    );
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+
+.bid-title{
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.bid-player{
+    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.bid-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+}
+
+.bid-buttons button{
+    min-width:42px;
+    height:40px;
+}
+
+.bid-buttons button.pass{
+    min-width:56px;
+    border-color:#ff7d7d;
+}
+
+
+
+#bidPanel{
+    position:absolute;
+    left:45%;
+    top:467px;
+    transform:translateX(-50%);
+    z-index:50;
+}
+
+#bidPanel.hidden{
+    display:none;
+}
+
+
+
+
+.contract-info{
+    margin-top:8px;
+    padding:8px 12px;
+    border-radius:10px;
+
+    text-align:center;
+    font-size:15px;
+    font-weight:750;
+
+    background:rgba(255,215,0,.12);
+    border:1px solid rgba(255,215,0,.35);
+
+    color:#ffd86b;
+}
+
+
+/* =======================================================
+   MATCH MODAL
+======================================================= */
+
+
+.match-modal{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.75);
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+}
+
+.match-modal.hidden{
+
+    display:none;
+
+}
+
+.match-window{
+
+    width:425px;
+
+    max-width:92%;
+
+    background:#232323;
+
+    border:3px solid #d8af37;
+
+    border-radius:18px;
+
+    padding:35px;
+
+    text-align:center;
+
+    box-shadow:0 0 35px rgba(255,215,0,.55);
+
+}
+
+.match-title{
+
+    font-size:34px;
+
+    color:#FFD700;
+
+    font-weight:bold;
+
+    margin-bottom:25px;
+
+}
+
+.match-winner{
+
+    font-size:28px;
+
+    color:white;
+
+    margin-bottom:20px;
+
+}
+
+.match-score{
+
+    font-size:42px;
+
+    color:#7CFC00;
+
+    font-weight:bold;
+
+    margin-bottom:30px;
+
+}
+
+.match-buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:18px;
+
+}
+
+.match-buttons button{
+
+    min-width:150px;
+
+    padding:12px;
+
+    font-size:18px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+
+
+.final-score-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    font-size:28px;
+
+    margin:22px 0;
+
+}
+
+.final-score-row span:first-child{
+
+    color:#ffffff;
+
+    font-weight:600;
+
+}
+
+.score-red{
+
+    color:#ff4d4d;
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+.score-green{
+
+    color:#67e34d;
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+#matchScore hr{
+
+    border:none;
+
+    border-top:1px solid rgba(255,255,255,.18);
+
+    margin:18px 0;
+
+}
+
+
+/* =======================================================
+   DEVELOPMENT CONTROLS
+======================================================= */
+
+.dev-controls{
+    display:flex;
+    gap:12px;
+    margin-top:12px;
+}
+
+.dev-controls select{
+    width:100%;
+}
+
+.status-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+
+
+/* =======================================================
+   RESPONSIVE
+======================================================= */
+
+
+    @media (max-width: 1280px) {
+      .layout { grid-template-columns: 1fr; }
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100vh; overflow: visible; } 
+      .sidepanel { min-height: 420px; }
+    }
+
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="title">
+  <h1>Batak Eğitim Masası</h1>
+</div>
+
+    <div class="controls">
+
+<label><input type="checkbox" id="lock0"> Kuzey</label>
+<label><input type="checkbox" id="lock1"> Doğu</label>
+<label><input type="checkbox" id="lock2"> Güney</label>
+<label><input type="checkbox" id="lock3"> Batı</label>
+
+<button id="partialDealBtn">
+🔒 Sabit Dağıt
+</button>
+  
+<select id="swapPlayer1" class="swap-select">
+  <option value="0">Kuzey</option>
+  <option value="1">Doğu</option>
+  <option value="2">Güney</option>
+  <option value="3">Batı</option>
+</select>
+
+<select id="swapPlayer2" class="swap-select">
+  <option value="1">Doğu</option>
+  <option value="2">Güney</option>
+  <option value="3">Batı</option>
+  <option value="0">Kuzey</option>
+</select>
+
+<button id="swapHandsBtn">
+  Elleri Yer Değiştir
+</button>
+      <button class="primary" id="dealBtn">Yeni El Dağıt</button>
+
+<button id="bidStartBtn">
+    İhale Başlat
+</button>
+
+<button id="startBtn">Oyunu Başlat</button>
+      <button id="showAllBtn">Tüm Eller Aç</button>
+      <button id="resetBtn">Bu Eli Sıfırla</button>
+      <button id="undoBtn">Geri Al</button>
+      <button id="redoBtn">İleri Al</button>
+      <button id="saveBtn">Eli Kaydet</button>
+      <button class="ghost" id="clearSavedBtn">Kayıtları Temizle</button>
+    </div>
+  </div>
+
+<div class="layout">
+
+    <!-- ===== SOL PANEL BAŞLANGIÇ ===== -->
+    <div class="left-panel">
+
+        <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
+        <div class="score-board">
+
+            <div class="score-title">
+                SKOR TABLOSU
+            </div>
+
+            <div class="score-row">
+                <span>Kuzey - Güney</span>
+                <span id="scoreA">0</span>
+            </div>
+
+            <div class="score-row">
+                <span>Doğu - Batı</span>
+                <span id="scoreB">0</span>
+            </div>
+
+            <div class="score-target">
+                <span id="targetScore"></span>'de Biter.
+            </div>
+
+        </div>
+        <!-- ===== SKOR TABLOSU BİTİŞ ===== -->
+
+
+    <div class="panel-box">
+        <h2>📋 Geliştirme Günlüğü</h2>
+        <div id="changelog"></div>
+    </div>
+
+    </div>
+    <!-- ===== SOL PANEL BİTİŞ ===== -->
+
+
+    <!-- ===== OYUN PANELİ BAŞLANGIÇ ===== -->
+    <div class="game-panel">
+      <div class="board">
+        <div class="seat" id="seat1">
+          <div class="seat-header">
+            <div class="seat-name">
+              <div class="name" id="name1">Kuzey</div>
+            </div>
+            <div class="count" id="count1">13 kart</div>
+          </div>
+          <div class="hand" id="hand1"></div>
+         <div class="seat-footer">
+    <div class="mini" id="seatMeta1"></div>
+    <div class="team-score" id="teamScoreA">Kuzey & Güney: 0</div>
+</div>
+        </div>
+
+        <div class="players">
+          <div class="seat" id="seat4">
+            <div class="seat-header">
+              <div class="seat-name">
+                <div class="name" id="name4">Batı</div>
+              </div>
+              <div class="count" id="count4">13 kart</div>
+            </div>
+            <div class="hand" id="hand4"></div>
+           <div class="seat-footer">
+    <div class="mini" id="seatMeta4"></div>
+    <div class="team-score" id="teamScoreB">Doğu & Batı: 0</div>
+</div>
+          </div>
+
+         <div class="played-area">
+
+  <div class="trick-grid" id="trickGrid"></div>
+
+ 
+
+  <!-- İHALE PANELİ BURADA -->
+
+</div>
+
+          <div class="seat" id="seat2">
+            <div class="seat-header">
+              <div class="seat-name">
+                <div class="name" id="name2">Doğu</div>
+              </div>
+              <div class="count" id="count2">13 kart</div>
+            </div>
+            <div class="hand" id="hand2"></div>
+            <div class="seat-footer">
+    <div class="mini" id="seatMeta2"></div>
+    <div class="team-score" id="teamScoreB2">
+        Doğu & Batı: 0
+    </div>
+</div>
+          </div>
+        </div>
+
+        <div class="seat" id="seat3">
+          <div class="seat-header">
+            <div class="seat-name">
+              <div class="name" id="name3">Güney</div>
+            </div>
+            <div class="count" id="count3">13 kart</div>
+          </div>
+          <div class="hand" id="hand3"></div>
+         <div class="seat-footer">
+    <div class="mini" id="seatMeta3"></div>
+    <div class="team-score" id="teamScoreA2">
+        Kuzey & Güney: 0
+    </div>
+</div>
+        </div>
+      </div>
+    </div>
+
+<div class="right-panel">
+
+    <div class="panel-box">
+        <h2>🏆 İhale</h2>
+
+        <div id="contractInfo" class="contract-info"></div>
+
+        <div class="dev-controls">
+
+            <div class="panel-field">
+                <label>İhaleyi Alan</label>
+                <select id="leaderSelect"></select>
+            </div>
+
+            <div class="panel-field">
+                <label>Koz</label>
+                <select id="trumpSelect">
+                    <option value="">Yok</option>
+                    <option value="S">Maça ♠</option>
+                    <option value="H">Kupa ♥</option>
+                    <option value="D">Karo ♦</option>
+                    <option value="C">Sinek ♣</option>
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel-box">
+        <h2>Kaydedilen eller</h2>
+        <div class="saved-list" id="savedList"></div>
+    </div>
+
+
+</div>
+
+</div>
+
+<div id="bidPanel" class="bid-modal hidden">
+
+    <div class="bid-box">
+
+        <div class="bid-title" id="mandatorySeven"></div>
+
+        <div class="bid-player" id="bidPlayerName">
+            Batı teklif seç
+        </div>
+
+        <div class="bid-buttons" id="bidButtons"></div>
+
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+
+
+/* =======================================================
+   CONSTANTS
+======================================================= */
+  const SUITS = ["H", "S", "D", "C"];
+  const SUIT_SYMBOL = { S: "♠", H: "♥", D: "♦", C: "♣" };
+  const SUIT_NAME = { S: "Maça", H: "Kupa", D: "Karo", C: "Sinek" };
+  const RANKS = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+  const RANK_VALUE = Object.fromEntries(RANKS.map((r, i) => [r, i + 2]));
+  const PLAYER_POSITIONS = ["Kuzey", "Doğu", "Güney", "Batı"]; // 0,1,2,3
+  const TEAM_OF = (i) => (i % 2 === 0 ? "A" : "B"); // 0-2 A, 1-3 B
+  const STORAGE_KEY = "batak_egitim_masalari_v1";
+
+
+/* =======================================================
+   UTILITIES
+======================================================= */
+
+const el = (id) => document.getElementById(id);
+
+
+/* =======================================================
+   APPLICATION STATE
+======================================================= */
+  const state = {
+    dealNo: 0,
+    deckSeed: null,
+    hands: [[], [], [], []],
+    selectedTrump: "",
+    leader: 0,
+    contractInfo: "",
+    currentTurn: 0,
+    currentTrick: [],
+    completedTricks: [],
+    history: [],
+    redo: [],
+    revealedSeat: null,
+    lockedSeats: [],
+    trickAnimating: false,
+    matchTarget: 41,
+    extraDeal: false,
+    phase: "distribution",
+    winnerOfLastTrick: null,
+    savedHands: [],
+    scores: { A: 0, B: 0 },
+    matchScore: {
+    A: 0,
+    B: 0
+},
+    bidStarter: null,
+    nextBidStarter: null,
+    bid: {
+        currentBid: null,
+    winner: null,
+    currentPlayer: null,
+    passed: [false, false, false, false],
+    activePlayers: [true,true,true,true],
+    passCount: 0
+    }
+};
+
+
+
+/* =======================================================
+   UI REFERENCES
+======================================================= */
+ const ui = {
+    teamScoreA: el("teamScoreA"),
+    teamScoreB: el("teamScoreB"),
+    teamScoreA2: el("teamScoreA2"),
+    teamScoreB2: el("teamScoreB2"),
+    winnerText: el("winnerText"),
+    savedList: el("savedList"),
+    trickGrid: el("trickGrid"),
+    leaderSelect: el("leaderSelect"),
+    trumpSelect: el("trumpSelect"),
+    toast: el("toast")
+};
+
+
+/* =======================================================
+   CHANGELOG DATA
+======================================================= */
+
+const changelog = {
+
+    version: "v6.0",
+
+    status: "Development",
+
+    done: [
+
+        "Kod mimarisi yeniden düzenlendi",
+
+        "JavaScript fonksiyonları kategorilere ayrıldı",
+
+        "CSS bölümleri düzenlendi",
+
+        "Topbar sadeleştirildi",
+
+        "Sağ panel optimize edildi",
+
+        "Responsive görünüm iyileştirildi",
+
+        "Geliştirme Günlüğü eklendi",
+
+        "Yeni ihale sistemi altyapısı oluşturuldu",
+
+        "1080p tam ekran görünümü optimize edildi",
+
+        "1080p pencere modu büyük ölçüde optimize edildi",
+
+        "Arayüz daha ferah ve gerçek masa görünümüne yaklaştırıldı",
+
+    ],
+
+    todo: [
+
+        "Claim (Kalan Elleri Teklif Et)",
+
+        "Mecburi 7",
+
+        "Kağıdı At"
+
+    ]
+
+};
+
+
+
+/* =======================================================
+   INITIALIZATION
+======================================================= */
+  function init() {
+
+    loadAppData();
+
+    fillLeaderOptions();
+
+    setupButtons();
+
+    renderChangelog();
+
+    syncControlsFromState();
+
+    state.initialSnapshot = cloneState();
+
+    // Oyuncu olayları
+    for(let i=1;i<=4;i++){
+
+    const player = i - 1;
+
+    el(`name${i}`).style.cursor = "pointer";
+
+    // TEK TIK
+    el(`name${i}`).addEventListener("click",()=>{
+
+        if(state.lockedSeats.includes(player)) return;
+
+        state.revealedSeat =
+            state.revealedSeat === player
+            ? null
+            : player;
+
+        render();
+    });
+
+    // ÇİFT TIK
+    el(`name${i}`).addEventListener("dblclick",()=>{
+
+        if(state.lockedSeats.includes(player)){
+
+            state.lockedSeats =
+                state.lockedSeats.filter(x => x !== player);
+
+        }else{
+
+            state.lockedSeats.push(player);
+
+        }
+
+        render();
+    });
+}
+    render();
+
+el("closeMatchBtn").addEventListener("click",()=>{
+
+    // Popup kapansın
+    el("matchModal").classList.add("hidden");
+
+    // Maç puanı sıfırlansın
+    resetMatch();
+
+    // El ve ihale temizlensin
+    resetBid();
+
+    resetDeal();
+
+    // Kartlar toplansın
+    state.hands = [[], [], [], []];
+
+    render();
+
+    showToast("Maç kapatıldı.");
+
+});
+
+
+    el("newMatchBtn").addEventListener("click", startNewMatch);
+    showToast("Hazır. Yeni el dağıt.");
+  }
+
+
+  function syncControlsFromState() {
+    ui.trumpSelect.value = state.selectedTrump || "";
+    ui.leaderSelect.value = String(state.leader);
+  }
+
+
+ 
+/* =======================================================
+   BUTTON EVENTS
+======================================================= */
+  function setupButtons() {
+    el("showAllBtn").addEventListener("click", () => {
+
+    // Hepsini aç
+    if (state.lockedSeats.length !== 4) {
+        state.lockedSeats = [0, 1, 2, 3];
+        state.revealedSeat = null;
+        showToast("Tüm oyuncuların eli açıldı.");
+    }
+    // Tekrar basılırsa kapat
+    else {
+        state.lockedSeats = [];
+        state.revealedSeat = null;
+        showToast("Tüm oyuncuların eli kapatıldı.");
+    }
+
+    render();
+});
+el("partialDealBtn").addEventListener(
+    "click",
+    redealKeepingSelectedHands
+);
+
+el("swapHandsBtn").addEventListener(
+    "click",
+    swapPlayerHands
+);
+
+    el("dealBtn").addEventListener("click", () => {
+      if (state.phase === "playing" && state.currentTrick.length && !confirm("Yeni el dağıtılsın mı? Mevcut tur silinecek.")) return;
+      dealNewHand();
+    });
+    el("resetBtn").addEventListener("click", () => {
+      if (!state.initialSnapshot) return showToast("Önce bir el dağıt.");
+      restoreState(JSON.parse(JSON.stringify(state.initialSnapshot)));
+      showToast("Bu el sıfırlandı.");
+    });
+    el("undoBtn").addEventListener("click", undo);
+    el("redoBtn").addEventListener("click", redo);
+    el("saveBtn").addEventListener("click", saveHand);
+    el("clearSavedBtn").addEventListener("click", clearSaved);
+    el("bidStartBtn").addEventListener("click", openBidModal);
+    el("startBtn").addEventListener("click", startGame);
+    ui.trumpSelect.addEventListener("change", onTrumpChange);
+    ui.leaderSelect.addEventListener("change", onLeaderChange);
+  }
+
+
+
+/* =======================================================
+   APPLICATION SETTINGS
+======================================================= */
+  function applyNames() {
+    el("name1").textContent = el("player1").value.trim() || "Kuzey";
+    el("name2").textContent = el("player2").value.trim() || "Doğu";
+    el("name3").textContent = el("player3").value.trim() || "Güney";
+    el("name4").textContent = el("player4").value.trim() || "Batı";
+    render();
+    saveAppData();
+    showToast("Oyuncu adları güncellendi.");
+  }
+
+function onTrumpChange() {
+    state.selectedTrump = ui.trumpSelect.value || "";
+    renderTop();
+    saveAppData();
+  }
+
+  function onLeaderChange() {
+    state.leader = Number(ui.leaderSelect.value);
+    if (state.phase === "playing" && state.currentTrick.length === 0) {
+      state.currentTurn = state.leader;
+    }
+    renderTop();
+    saveAppData();
+  }
+
+
+/* =======================================================
+   SAVE / LOAD
+======================================================= */
+
+  function saveHand() {
+    if (!state.hands.some(h => h.length || state.currentTrick.length)) {
+      showToast("Kaydedilecek bir el yok.");
+      return;
+    }
+    const name = prompt("Kayıt adı:", `El ${state.dealNo}`);
+    if (name === null) return;
+    const item = {
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+      name: name.trim() || `El ${state.dealNo}`,
+      createdAt: Date.now(),
+      dealNo: state.dealNo,
+      snapshot: cloneState()
+    };
+    state.savedHands.push(item);
+    saveAppData();
+    renderSavedList();
+    showToast("El kaydedildi.");
+  }
+
+
+  function loadSavedHand(id) {
+    const item = state.savedHands.find(x => x.id === id);
+    if (!item) return;
+    restoreState(JSON.parse(JSON.stringify(item.snapshot)));
+    state.initialSnapshot = JSON.parse(JSON.stringify(item.snapshot));
+    showToast("Kayıtlı el yüklendi.");
+  }
+
+  function deleteSavedHand(id) {
+    if (!confirm("Bu kayıt silinsin mi?")) return;
+    state.savedHands = state.savedHands.filter(x => x.id !== id);
+    saveAppData();
+    renderSavedList();
+    showToast("Kayıt silindi.");
+  }
+
+  function clearSaved() {
+    if (!confirm("Tüm kayıtlı eller silinsin mi?")) return;
+    state.savedHands = [];
+    saveAppData();
+    renderSavedList();
+    showToast("Kayıtlar temizlendi.");
+  }
+
+  
+
+function saveAppData() {
+    const payload = {
+        dealNo: state.dealNo,
+        savedHands: state.savedHands
+    };
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(payload)
+    );
+}
+
+function loadAppData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+
+    try {
+        const payload = JSON.parse(raw);
+
+        state.dealNo = payload.dealNo || 0;
+
+        state.savedHands = Array.isArray(payload.savedHands)
+            ? payload.savedHands
+            : [];
+
+    } catch (e) {}
+}
+
+
+
+/* =======================================================
+   MATCH SYSTEM
+======================================================= */
+
+function calculateMatchScore(){
+
+    const bidWinner = state.bid.winner;
+
+    if(bidWinner === null) return;
+
+    const bid = state.bid.currentBid;
+
+    const bidTeam =
+        TEAM_OF(bidWinner);
+
+    const otherTeam =
+        bidTeam === "A"
+            ? "B"
+            : "A";
+
+    const bidTricks =
+        state.scores[bidTeam];
+
+    const otherTricks =
+        state.scores[otherTeam];
+
+    // ihaleyi alan takım
+
+    if(bidTricks >= bid){
+
+        state.matchScore[bidTeam] +=
+            bidTricks;
+
+    }else{
+
+        state.matchScore[bidTeam] -=
+            bid;
+    }
+
+    // karşı takım
+
+    if(otherTricks === 0){
+
+        state.matchScore[otherTeam] -=
+            bid;
+
+    }else{
+
+        state.matchScore[otherTeam] +=
+            otherTricks;
+    }
+
+}
+
+
+function showMatchWinner(team){
+
+    const modal = el("matchModal");
+
+    const a = state.matchScore.A;
+    const b = state.matchScore.B;
+
+    el("matchWinner").textContent =
+        team === "A"
+        ? "🏆 Kuzey - Güney Kazandı"
+        : "🏆 Doğu - Batı Kazandı";
+
+    el("matchScore").innerHTML = `
+
+        <hr>
+
+        <div class="final-score-row">
+
+            <span>Kuzey - Güney</span>
+
+            <span class="${a < 0 ? 'score-red' : 'score-green'}">
+                ${a}
+            </span>
+
+        </div>
+
+        <hr>
+
+        <div class="final-score-row">
+
+            <span>Doğu - Batı</span>
+
+            <span class="${b < 0 ? 'score-red' : 'score-green'}">
+                ${b}
+            </span>
+
+        </div>
+
+        <hr>
+
+    `;
+
+    modal.classList.remove("hidden");
+
+}
+
+
+
+function checkMatchWinner(){
+
+    const a = state.matchScore.A;
+    const b = state.matchScore.B;
+
+    // Henüz hedef puana ulaşan yok
+    if(a < state.matchTarget && b < state.matchTarget){
+        return;
+    }
+
+    // İki takım da hedefi geçti
+    if(a >= state.matchTarget && b >= state.matchTarget){
+
+        // Berabere → Uzatma
+        if(a === b){
+
+            showToast("🏆 Berabere! Uzatma eli oynanacak.");
+
+            state.extraDeal = true;
+
+            return;
+        }
+
+        // Yüksek puan kazanır
+        if(a > b){
+
+            showMatchWinner("A");
+
+        }else{
+
+            showMatchWinner("B");
+
+        }
+
+        return;
+    }
+
+    // Sadece Kuzey-Güney hedefe ulaştı
+    if(a >= state.matchTarget){
+
+        showMatchWinner("A");
+
+        return;
+    }
+
+    // Sadece Doğu-Batı hedefe ulaştı
+    if(b >= state.matchTarget){
+
+        showMatchWinner("B");
+
+        return;
+    }
+
+}
+
+
+function newMatch(){
+
+    el("matchModal")
+        .classList
+        .add("hidden");
+
+    resetMatch();
+
+    dealNewHand();
+
+    render();
+
+    showToast(
+        "🏆 Yeni maç başladı."
+    );
+
+}
+
+
+function resetMatch(){
+
+    state.matchScore = {
+
+        A:0,
+
+        B:0
+
+    };
+
+    state.extraDeal = false;
+
+}
+
+function startNewMatch(){
+
+    resetMatch();
+
+    dealNewHand();
+
+    el("matchModal").classList.add("hidden");
+
+    showToast("🏆 Yeni maç başladı.");
+
+}
+
+
+/* =======================================================
+   AUCTION SYSTEM
+======================================================= */
+
+function openBidModal(){
+
+    determineBidStarter();
+    resetBidState();
+
+    state.revealedSeat =
+        state.bid.currentPlayer;
+
+    render(); // BUNU EKLE
+
+    document
+        .getElementById("bidPanel")
+        .classList.remove("hidden");
+
+    renderBidOptions();
+}
+
+
+
+function renderBidOptions(){
+
+    state.revealedSeat = state.bid.currentPlayer;
+
+    if(state.bid.currentBid){
+
+        document.getElementById("mandatorySeven").textContent =
+            getSeatLabel(state.bid.winner) +
+            " " +
+            state.bid.currentBid +
+            " dedi";
+
+    }else{
+
+        const mandatory =
+            getMandatorySevenPlayer(state.bidStarter);
+
+        document.getElementById("mandatorySeven").textContent =
+            getSeatLabel(mandatory) +
+            " mecbur 7'ci";
+    }
+
+    const player = state.bid.currentPlayer;
+
+    document.getElementById("bidPlayerName").textContent =
+        getSeatLabel(player) + " teklif seç";
+
+    const container =
+        document.getElementById("bidButtons");
+
+    container.innerHTML = "";
+
+    // İlk 3 oyuncu PAS dediyse son oyuncu mecburi teklif verecek
+
+const passCount =
+    state.bid.passed.filter(x => x).length;
+
+const forcedBid =
+    state.bid.currentBid === null &&
+    passCount === 3;
+
+    // Mecburi teklif değilse PAS butonunu göster
+    if (!forcedBid) {
+
+        const passBtn =
+            document.createElement("button");
+
+        passBtn.textContent = "PAS";
+        passBtn.className = "pass";
+        passBtn.onclick = () => makeBidPass();
+
+        container.appendChild(passBtn);
+    }
+
+    // Tekliflerin başlangıcı
+    let start;
+
+    if (forcedBid) {
+        start = 7;
+    } else if (state.bid.currentBid === null) {
+        start = 8;
+    } else {
+        start = state.bid.currentBid + 1;
+    }
+
+    for(let i = start; i <= 13; i++){
+
+        const btn =
+            document.createElement("button");
+
+        btn.textContent = i;
+
+        btn.onclick = () => makeBid(i);
+
+        container.appendChild(btn);
+    }
+}
+
+
+
+function nextBidPlayer(){
+
+    if(state.bid.hasBid.every(x => x)){
+        finishBid();
+        return;
+    }
+
+    const rotation = {
+        0: 3,
+        3: 2,
+        2: 1,
+        1: 0
+    };
+
+    let p = state.bid.currentPlayer;
+
+    do{
+        p = rotation[p];
+    }while(state.bid.hasBid[p]);
+
+    state.bid.currentPlayer = p;
+    state.revealedSeat = p;
+
+    render();
+    renderBidOptions();
+}
+
+
+
+function resetBid(){
+
+    state.bid.currentBid = null;
+    state.bid.winner = null;
+    state.bid.currentPlayer = null;
+
+    state.bid.passCount = 0;
+
+    state.bid.passed = [
+        false,
+        false,
+        false,
+        false
+    ];
+
+    state.bid.activePlayers = [
+        true,
+        true,
+        true,
+        true
+    ];
+
+}
+
+
+
+
+function resetBidState(){
+
+    state.bid = {
+        currentBid: null,
+        winner: null,
+        currentPlayer: state.bidStarter,
+        passed: [false, false, false, false],
+        activePlayers: [true, true, true, true],
+        passCount: 0,
+        hasBid: [false, false, false, false]
+    };
+}
+
+
+
+ function determineBidStarter(){
+
+    const BID_ROTATION = [0,3,2,1];
+
+    if(state.nextBidStarter === null){
+
+        state.bidStarter =
+            BID_ROTATION[
+                Math.floor(
+                    Math.random()*4
+                )
+            ];
+
+    }else{
+
+        state.bidStarter =
+            state.nextBidStarter;
+    }
+
+    const idx =
+        BID_ROTATION.indexOf(
+            state.bidStarter
+        );
+
+    state.nextBidStarter =
+        BID_ROTATION[
+            (idx + 1) % 4
+        ];
+}
+
+
+
+function checkBidFinish(){
+
+    const active =
+        state.bid.activePlayers
+            .filter(x => x).length;
+
+    if(active <= 1){
+
+        const winner =
+            state.bid.activePlayers.findIndex(x => x);
+
+        state.revealedSeat = winner;
+
+        render();
+
+        finishBid();
+    }
+}
+
+
+
+function makeBid(value){
+
+    state.bid.currentBid = value;
+
+    state.bid.winner = state.bid.currentPlayer;
+
+    state.bid.hasBid[state.bid.currentPlayer] = true;
+
+    // 13 denildiyse ihale hemen biter
+    if (value === 13) {
+        finishBid();
+        return;
+    }
+
+    nextBidPlayer();
+}
+
+
+function makeBidPass(){
+
+    const player = state.bid.currentPlayer;
+
+    state.bid.hasBid[player] = true;
+
+    state.bid.passed[player] = true;
+
+    if(state.bid.hasBid.every(x => x)){
+        finishBid();
+        return;
+    }
+
+    nextBidPlayer();
+}
+
+
+
+
+function finishBid(){
+
+    state.revealedSeat = null;
+
+    document
+    .getElementById("bidPanel")
+    .classList.add("hidden");
+
+    const winner =
+        state.bid.winner;
+
+    const bid =
+        state.bid.currentBid;
+
+    if(winner === null){
+
+        showToast("İhale oluşmadı.");
+
+        return;
+    }
+
+    addHistory(
+        `${getSeatLabel(winner)} `
+        + `${bid} aldı.`
+    );
+
+
+state.contractInfo =
+    getSeatLabel(winner)
+    + " aldı - "
+    + bid;
+
+    showToast(
+        getSeatLabel(winner)
+        + " "
+        + bid
+        + " aldı."
+    );
+
+    render();
+}
+
+
+
+function getMandatorySevenPlayer(starter){
+
+    const map = {
+        0: 1, // Kuzey başladıysa Doğu
+        3: 0, // Batı başladıysa Kuzey
+        2: 3, // Güney başladıysa Batı
+        1: 2  // Doğu başladıysa Güney
+    };
+
+    return map[starter];
+}
+
+
+
+
+
+
+/* =======================================================
+   GAME LOGIC
+======================================================= */
+
+
+ function dealNewHand() {
+
+    const snapshot = cloneState();
+
+    if (state.hands.some(h => h.length || state.currentTrick.length || state.completedTricks.length)) {
+        state.redo = [];
+    }
+
+    const deck = createDeck();
+
+    state.hands = [[], [], [], []];
+
+    for (let i = 0; i < deck.length; i++) {
+        state.hands[i % 4].push(deck[i]);
+    }
+
+    for (const hand of state.hands) {
+        hand.sort(compareCards);
+    }
+
+    state.dealNo++;
+
+    resetBid();
+
+    resetDeal();
+
+    addHistory(
+        `Yeni el dağıtıldı. Başlayan oyuncu: ${PLAYER_POSITIONS[state.leader]}.`
+    );
+
+    saveCurrentSnapshot(snapshot, false);
+
+    render();
+}
+
+
+function redealKeepingSelectedHands() {
+
+    const locked = [];
+
+    for(let i=0;i<4;i++){
+        if(document.getElementById(`lock${i}`).checked){
+            locked.push(i);
+        }
+    }
+
+    if(locked.length === 0){
+        alert("En az 1 oyuncu seç.");
+        return;
+    }
+
+    const fixedCards = [];
+    const newHands = [[],[],[],[]];
+
+    locked.forEach(player=>{
+        newHands[player] = [...state.hands[player]];
+        fixedCards.push(...state.hands[player]);
+    });
+
+    const deck = createDeck();
+
+    const remainingDeck = deck.filter(deckCard =>
+
+        !fixedCards.some(card =>
+            card.suit === deckCard.suit &&
+            card.rank === deckCard.rank
+        )
+
+    );
+
+    shuffle(remainingDeck);
+
+    const unlocked =
+        [0,1,2,3].filter(x => !locked.includes(x));
+
+    unlocked.forEach(player=>{
+
+        while(newHands[player].length < 13){
+
+            newHands[player].push(
+                remainingDeck.pop()
+            );
+
+        }
+
+    });
+
+    for (const hand of newHands) {
+    hand.sort(compareCards);
+}
+
+   state.hands = newHands;
+
+state.currentTrick = [];
+state.completedTricks = [];
+
+state.winnerOfLastTrick = null;
+
+state.scores = {
+    A: 0,
+    B: 0
+};
+
+render();
+
+showToast("Seçilen eller korunarak yeni dağıtım yapıldı.");
+}
+
+
+
+function swapPlayerHands() {
+
+    const p1 = Number(el("swapPlayer1").value);
+    const p2 = Number(el("swapPlayer2").value);
+
+    if (p1 === p2) {
+        showToast("Aynı oyuncu seçilemez.");
+        return;
+    }
+
+    // Elleri değiştir
+    [state.hands[p1], state.hands[p2]] = [state.hands[p2], state.hands[p1]];
+
+    render();
+
+    showToast(getSeatLabel(p1) + " ile " + getSeatLabel(p2) + " elleri değiştirildi.");
+}
+
+
+
+function resetDeal(){
+
+    state.selectedTrump = "";
+
+    state.leader = 0;
+
+    state.currentTurn = 0;
+
+    state.currentTrick = [];
+
+    state.completedTricks = [];
+
+    state.scores = {
+        A:0,
+        B:0
+    };
+
+    state.history = [];
+
+    state.redo = [];
+
+    state.phase = "distribution";
+
+    state.winnerOfLastTrick = null;
+
+    state.revealedSeat = null;
+
+    state.lockedSeats = [];
+
+}
+
+
+function resetCurrentHand() {
+
+    const firstSnapshot = state.initialSnapshot || null;
+
+    if (!firstSnapshot) {
+        showToast("Önce yeni bir el dağıt.");
+        return;
+    }
+
+    restoreState(JSON.parse(JSON.stringify(firstSnapshot)));
+
+    showToast("El başlangıç durumuna döndü.");
+}
+
+
+
+function startGame() {
+
+    state.selectedTrump = ui.trumpSelect.value || "";
+
+    state.leader = Number(ui.leaderSelect.value);
+
+    state.currentTurn = state.leader;
+
+    state.phase = "playing";
+
+    addHistory(
+        `Oyun başladı. Koz: ${
+            state.selectedTrump
+                ? SUIT_NAME[state.selectedTrump]
+                : "Yok"
+        }. Başlayan: ${
+            getSeatLabel(state.leader)
+        }.`
+    );
+
+    state.initialSnapshot = cloneState();
+
+    render();
+}
+
+  
+function isLegalPlay(player, card) {
+
+    if (state.phase !== "playing") return false;
+    if (player !== state.currentTurn) return false;
+
+    if (state.currentTrick.length === 0) return true;
+
+    const hand = state.hands[player];
+    const leadSuit = state.currentTrick[0].card.suit;
+
+    const leadCards = hand.filter(
+        c => c.suit === leadSuit
+    );
+
+    // Aynı renkten kart varsa
+   if (leadCards.length > 0) {
+
+    const trumpCut =
+        state.selectedTrump &&
+        leadSuit !== state.selectedTrump &&
+        state.currentTrick.some(
+            x => x.card.suit === state.selectedTrump
+        );
+
+    // Sadece farklı renk oynanmışken sonradan koz kesilmişse
+    // yükseltme zorunluluğu kalkar
+    if (!trumpCut) {
+
+        const highestLead = Math.max(
+            ...state.currentTrick
+                .filter(x => x.card.suit === leadSuit)
+                .map(x => x.card.value)
+        );
+
+        const higherLead = leadCards.filter(
+            c => c.value > highestLead
+        );
+
+        if (higherLead.length > 0) {
+            return (
+                card.suit === leadSuit &&
+                card.value > highestLead
+            );
+        }
+    }
+
+    return card.suit === leadSuit;
+}
+
+    // Koz tanımlı değilse istediğini atabilir
+    if (!state.selectedTrump) {
+        return true;
+    }
+
+    const trumpCards = hand.filter(
+        c => c.suit === state.selectedTrump
+    );
+
+    // Koz atmak zorunda
+    if (trumpCards.length > 0) {
+
+        const playedTrumps = state.currentTrick.filter(
+            x => x.card.suit === state.selectedTrump
+        );
+
+        // Masada koz varsa yükseltme mecburi
+        if (playedTrumps.length > 0) {
+
+            const highestTrump = Math.max(
+                ...playedTrumps.map(x => x.card.value)
+            );
+
+            const higherTrumps = trumpCards.filter(
+                c => c.value > highestTrump
+            );
+
+            if (higherTrumps.length > 0) {
+                return (
+                    card.suit === state.selectedTrump &&
+                    card.value > highestTrump
+                );
+            }
+        }
+
+        return card.suit === state.selectedTrump;
+    }
+
+    return true;
+}
+
+
+function playCard(player, cardId) {
+   
+    if (state.trickAnimating) return;
+
+    const found = getHandIndexForCard(cardId);
+
+    if (!found || found.player !== player) return;
+
+    const card = state.hands[player][found.index];
+
+    if (!isLegalPlay(player, card)) {
+
+        showToast("Bu elde önce çıkan renge uymak gerekiyor.");
+
+        return;
+    }
+
+    state.redo = [];
+
+    state.history.push({
+        type: "play",
+        player,
+        card: { ...card },
+        before: cloneLite()
+    });
+
+    state.hands[player].splice(found.index, 1);
+
+    state.currentTrick.push({
+        player,
+        card: { ...card }
+    });
+
+    state.currentTurn = (player + 3) % 4;
+
+    addHistory(
+        `${PLAYER_POSITIONS[player]} oynadı: ${cardLabel(card)}.`
+    );
+
+    // Dördüncü kart atıldıysa
+    if (state.currentTrick.length === 4) {
+
+        // Son kart da görünsün
+        render();
+    
+          state.trickAnimating = true;
+
+        setTimeout(() => {
+
+            const winner = determineTrickWinner(
+                state.currentTrick,
+                state.selectedTrump
+            );
+
+            state.completedTricks.push({
+
+                leader: state.leader,
+
+                winner,
+
+                trump: state.selectedTrump,
+
+                cards: state.currentTrick.map(x => ({ ...x.card }))
+
+            });
+
+            state.scores[TEAM_OF(winner)]++;
+
+            state.winnerOfLastTrick = winner;
+
+            state.history.push({
+
+                type: "trick",
+
+                winner,
+
+                trick: state.currentTrick.map(x => ({ ...x }))
+
+            });
+
+            addHistory(
+                `Tur bitti. Kazanan: ${PLAYER_POSITIONS[winner]} (${TEAM_OF(winner) === "A" ? "Takım A" : "Takım B"}).`
+            );
+
+            state.currentTrick = [];
+
+            state.leader = winner;
+
+            state.currentTurn = winner;
+
+            if (isDealOver()) {
+
+                calculateMatchScore();
+
+                checkMatchWinner();
+
+                state.phase = "finished";
+
+                addHistory("El tamamlandı.");
+            }
+
+           state.trickAnimating = false;
+
+            render();
+
+        }, 1000);
+
+        return;
+    }
+
+    render();
+}
+
+  function determineTrickWinner(trick, trump) {
+    const leadSuit = trick[0].card.suit;
+    let candidates = trick.map(t => ({...t}));
+
+    const trumpCards = trump ? candidates.filter(t => t.card.suit === trump) : [];
+    if (trump && trumpCards.length) {
+      candidates = trumpCards;
+    } else {
+      candidates = candidates.filter(t => t.card.suit === leadSuit);
+    }
+    candidates.sort((a, b) => a.card.value - b.card.value);
+    return candidates[candidates.length - 1].player;
+  }
+
+  function isDealOver() {
+    return state.hands.every(h => h.length === 0) && state.currentTrick.length === 0;
+  }
+
+  function addHistory(text) {
+    state.history.push({ type: "log", text, time: Date.now() });
+  }
+
+function undo() {
+    const action = state.history.pop();
+    if (!action) {
+      showToast("Geri alınacak adım yok.");
+      return;
+    }
+    if (!action.before) {
+      // Log-only action, step back further.
+      if (action.type === "log") {
+        render();
+        return undo();
+      }
+      render();
+      return;
+    }
+    state.redo.push(cloneState());
+    restoreFromLite(action.before);
+    addHistory("Son hamle geri alındı.");
+    render();
+  }
+
+  function redo() {
+    const snapshot = state.redo.pop();
+    if (!snapshot) {
+      showToast("İleri alınacak adım yok.");
+      return;
+    }
+    const current = cloneState();
+    restoreState(snapshot);
+    state.history.push({ type: "snapshot", before: current });
+    addHistory("Hamle ileri alındı.");
+    render();
+  }
+
+/* =======================================================
+   RENDER SYSTEM
+======================================================= */
+  function render() {
+    syncControlsFromState();
+    renderTop();
+    for (let i = 0; i < 4; i++) renderHand(i);
+    renderTrickGrid();
+    renderSavedList();
+    saveAppData();
+    el("contractInfo").textContent = state.contractInfo;
+    el("scoreA").textContent = state.matchScore.A;
+    el("scoreB").textContent = state.matchScore.B;
+    el("targetScore").textContent = state.matchTarget;
+  }
+
+ function renderHand(playerIndex) {
+    const handEl = el(`hand${playerIndex + 1}`);
+    handEl.innerHTML = "";
+
+handEl.ondragover = (e) => {
+    e.preventDefault();
+};
+handEl.ondrop = (e) => {
+
+  
+    e.preventDefault();
+
+    const cardId = e.dataTransfer.getData("cardId");
+    const fromPlayer = Number(
+        e.dataTransfer.getData("fromPlayer")
+    );
+
+    const toPlayer = playerIndex;
+
+    const idx = state.hands[fromPlayer]
+        .findIndex(c => c.id === cardId);
+
+    if(idx < 0) return;
+
+    const card = state.hands[fromPlayer]
+        .splice(idx,1)[0];
+
+    state.hands[toPlayer].push(card);
+    state.hands[toPlayer].sort(compareCards);
+    state.hands[fromPlayer].sort(compareCards);
+
+    render();
+};
+
+    const hand = state.hands[playerIndex].slice().sort(compareCards);
+
+    if(
+    state.revealedSeat !== playerIndex &&
+    !state.lockedSeats.includes(playerIndex)
+){
+        for(let i=0;i<hand.length;i++){
+            const back=document.createElement("div");
+            back.className="card-back";
+            handEl.appendChild(back);
+        }
+        el(`count${playerIndex + 1}`).textContent = `${hand.length} kart`;
+        return;
+    }
+
+    const legalSuit = currentLeadSuit();
+    const canFollow = state.hands[playerIndex].some(c => c.suit === legalSuit);
+let previousSuit = null;
+    for (const card of hand) {if (previousSuit && previousSuit !== card.suit) {
+    const spacer = document.createElement("div");
+    spacer.style.width = "20px";
+    spacer.style.height = "1px";
+    handEl.appendChild(spacer);
+}
+
+previousSuit = card.suit;
+      const btn = document.createElement("button");
+      btn.draggable = true;
+      btn.className = `card suit-${card.suit}`;
+      btn.addEventListener("dragstart", (e) => {
+
+    e.dataTransfer.setData(
+        "cardId",
+        card.id
+    );
+
+    e.dataTransfer.setData(
+        "fromPlayer",
+        playerIndex
+    );
+});
+      btn.innerHTML = `
+        <div class="corner">
+          <div class="rank">${card.rank}</div>
+        </div>
+        <div class="suit">${SUIT_SYMBOL[card.suit]}</div>
+        <div class="corner" style="align-items:flex-end;">
+          <div class="rank">${card.rank}</div>
+        </div>
+      `;
+      const legal = isLegalPlay(playerIndex, card);
+      btn.disabled = !(state.phase === "playing" && playerIndex === state.currentTurn && legal);
+      btn.title = legal ? "Oyna" : (playerIndex !== state.currentTurn ? "Sıra değil" : (canFollow ? "Önce çıkan renge uymalısın" : "Oynanabilir"));
+      btn.addEventListener("click", () => playCard(playerIndex, card.id));
+      handEl.appendChild(btn);
+    }
+    el(`count${playerIndex + 1}`).textContent = `${state.hands[playerIndex].length} kart`;
+    el(`seat${playerIndex + 1}`).classList.toggle("current-turn", state.phase === "playing" && playerIndex === state.currentTurn);
+    el(`seatMeta${playerIndex + 1}`).textContent = "";
+  }
+
+function renderForcedBid(){
+
+    const container =
+        document.getElementById(
+            "bidButtons"
+        );
+
+    container.innerHTML = "";
+
+    for(let i=7;i<=13;i++){
+
+        const btn =
+            document.createElement(
+                "button"
+            );
+
+        btn.textContent = i;
+
+        btn.onclick = ()=>{
+
+            state.bid.currentBid = i;
+
+            state.bid.winner =
+                state.bid.currentPlayer;
+
+            finishBid();
+        };
+
+        container.appendChild(btn);
+    }
+
+    document.getElementById(
+        "bidPlayerName"
+    ).textContent =
+        getSeatLabel(
+            state.bid.currentPlayer
+        )
+        + " almak zorunda";
+}
+
+
+
+ function renderTrickGrid() {
+    ui.trickGrid.innerHTML = "";
+
+    const positions = [
+        "1 / 2", // Kuzey
+        "2 / 3", // Doğu
+        "3 / 2", // Güney
+        "2 / 1"  // Batı
+    ];
+    for (let i = 0; i < 4; i++) {
+      const slot = document.createElement("div");
+      slot.className = "trick-slot";
+      slot.style.gridArea = positions[i];
+      if (state.currentTrick.length && i === state.leader) slot.classList.add("leader");
+      if (state.currentTrick.some(x => x.player === i)) slot.classList.add("current");
+      if (state.winnerOfLastTrick === i) slot.classList.add("winner");
+
+      const played = state.currentTrick.find(x => x.player === i);
+      slot.innerHTML = `
+        <div class="label">${getSeatLabel(i)}</div>
+        <div class="played ${played ? cardClass(played.card) : ''}">
+          ${played ? `<div class="card small suit-${played.card.suit}" style="margin:0 auto; pointer-events:none; cursor:default;">
+            <div class="corner"><div class="rank">${played.card.rank}</div></div>
+            <div class="suit">${SUIT_SYMBOL[played.card.suit]}</div>
+            <div class="corner" style="align-items:flex-end;"><div class="rank">${played.card.rank}</div></div>
+          </div>` : "<div class='mini'>Bekliyor</div>"}
+        </div>
+      `;
+      ui.trickGrid.appendChild(slot);
+    }
+  }
+
+
+  function renderSavedList() {
+    ui.savedList.innerHTML = "";
+    if (!state.savedHands.length) {
+      const empty = document.createElement("div");
+      empty.className = "log-item";
+      empty.textContent = "Kayıtlı el yok.";
+      ui.savedList.appendChild(empty);
+      return;
+    }
+    state.savedHands
+      .slice()
+      .sort((a,b) => b.createdAt - a.createdAt)
+      .forEach(item => {
+        const wrap = document.createElement("div");
+        wrap.className = "saved-item";
+        wrap.innerHTML = `
+          <div>
+            <div class="name">${escapeHtml(item.name)}</div>
+            <div class="info">${new Date(item.createdAt).toLocaleString("tr-TR")} · El #${item.dealNo}</div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+            <button data-action="load">Yükle</button>
+            <button data-action="delete" class="danger">Sil</button>
+          </div>
+        `;
+        wrap.querySelector('[data-action="load"]').addEventListener("click", () => loadSavedHand(item.id));
+        wrap.querySelector('[data-action="delete"]').addEventListener("click", () => deleteSavedHand(item.id));
+        ui.savedList.appendChild(wrap);
+      });
+  }
+
+
+
+function renderTop() {
+
+    const scoreA =
+        `${getSeatLabel(0)} & ${getSeatLabel(2)}: ${state.scores.A}`;
+
+    const scoreB =
+        `${getSeatLabel(1)} & ${getSeatLabel(3)}: ${state.scores.B}`;
+
+    ui.teamScoreA.textContent = scoreA;
+    ui.teamScoreB.textContent = scoreB;
+
+    ui.teamScoreA2.textContent = scoreA;
+    ui.teamScoreB2.textContent = scoreB;
+}
+
+
+function renderChangelog() {
+
+    const panel = el("changelog");
+
+    panel.className = "changelog";
+
+    panel.innerHTML = `
+
+<div>
+
+<div class="changelog-version">
+Version : ${changelog.version}
+</div>
+
+<div class="changelog-status">
+Status : ${changelog.status}
+</div>
+
+</div>
+
+<div>
+
+<div class="changelog-title">
+✅ DONE
+</div>
+
+${changelog.done.map(item => `<div class="changelog-item">✔ ${item}</div>`).join("")}
+
+</div>
+
+<div>
+
+<div class="changelog-title">
+🚧 TODO
+</div>
+
+${changelog.todo.map(item => `<div class="changelog-item">□ ${item}</div>`).join("")}
+
+</div>
+
+`;
+
+}
+
+
+/* =======================================================
+   UTILITY FUNCTIONS
+======================================================= */
+
+function showToast(text) {
+    ui.toast.textContent = text;
+    ui.toast.classList.add("show");
+
+    clearTimeout(showToast._t);
+
+    showToast._t = setTimeout(() => {
+        ui.toast.classList.remove("show");
+    }, 1800);
+}
+
+
+  function saveCurrentSnapshot(prevSnapshot, notify = true) {
+    state.initialSnapshot = cloneState();
+    if (notify) showToast("El başlangıç olarak kaydedildi.");
+  }
+
+
+
+function getSeatLabel(i) {
+  return el(`name${i + 1}`).textContent || PLAYER_POSITIONS[i];
+}
+
+
+function escapeHtml(str) {
+    return String(str).replace(
+        /[&<>"']/g,
+        s => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":"&#39;"
+        }[s])
+    );
+}
+
+
+
+  function fillLeaderOptions() {
+    ui.leaderSelect.innerHTML = "";
+    for (let i = 0; i < 4; i++) {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = PLAYER_POSITIONS[i];
+      ui.leaderSelect.appendChild(opt);
+    }
+  }
+
+
+
+
+  function restoreFromLite(lite) {
+    state.hands = lite.hands.map(h => h.map(c => ({...c})));
+    state.selectedTrump = lite.selectedTrump;
+    state.leader = lite.leader;
+    state.currentTurn = lite.currentTurn;
+    state.currentTrick = lite.currentTrick.map(x => ({...x}));
+    state.completedTricks = lite.completedTricks.map(t => ({
+      leader: t.leader,
+      winner: t.winner,
+      trump: t.trump,
+      cards: t.cards.map(c => ({...c}))
+    }));
+    state.phase = lite.phase;
+    state.winnerOfLastTrick = lite.winnerOfLastTrick;
+    state.scores = { ...lite.scores };
+    syncControlsFromState();
+  }
+
+
+
+  function cloneState() {
+    return {
+      dealNo: state.dealNo,
+      deckSeed: state.deckSeed,
+      hands: state.hands.map(h => h.map(c => ({...c}))),
+      selectedTrump: state.selectedTrump,
+      leader: state.leader,
+      currentTurn: state.currentTurn,
+      currentTrick: state.currentTrick.map(x => ({...x})),
+      completedTricks: state.completedTricks.map(t => ({
+        leader: t.leader,
+        winner: t.winner,
+        trump: t.trump,
+        cards: t.cards.map(c => ({...c}))
+      })),
+      history: state.history.slice(),
+      redo: state.redo.slice(),
+      phase: state.phase,
+      winnerOfLastTrick: state.winnerOfLastTrick,
+      scores: { ...state.scores }
+    };
+  }
+
+  function restoreState(snapshot) {
+    state.dealNo = snapshot.dealNo;
+    state.deckSeed = snapshot.deckSeed;
+    state.hands = snapshot.hands.map(h => h.map(c => ({...c})));
+    state.selectedTrump = snapshot.selectedTrump;
+    state.leader = snapshot.leader;
+    state.currentTurn = snapshot.currentTurn;
+    state.currentTrick = snapshot.currentTrick.map(x => ({...x}));
+    state.completedTricks = snapshot.completedTricks.map(t => ({
+      leader: t.leader,
+      winner: t.winner,
+      trump: t.trump,
+      cards: t.cards.map(c => ({...c}))
+    }));
+    state.history = snapshot.history.slice();
+    state.redo = snapshot.redo.slice();
+    state.phase = snapshot.phase;
+    state.winnerOfLastTrick = snapshot.winnerOfLastTrick;
+    state.scores = { ...snapshot.scores };
+    syncControlsFromState();
+    render();
+  }
+
+  function randInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  function createDeck() {
+    const deck = [];
+    for (const suit of SUITS) {
+      for (const rank of RANKS) {
+        deck.push({
+          suit,
+          rank,
+          value: RANK_VALUE[rank],
+          id: suit + rank
+        });
+      }
+    }
+    return shuffle(deck);
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = randInt(i + 1);
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function compareCards(a, b) {
+    if (a.suit !== b.suit) return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+    return b.value - a.value;
+  }
+
+  function cardLabel(card) {
+    return `${card.rank}${SUIT_SYMBOL[card.suit]}`;
+  }
+
+  function cardClass(card) {
+    return (card.suit === "H" || card.suit === "D") ? "red" : "black";
+  }
+
+  function getHandIndexForCard(cardId) {
+
+    for (let i = 0; i < 4; i++) {
+const positions = [
+    "1 / 2", // Kuzey
+    "2 / 3", // Doğu
+    "3 / 2", // Güney
+    "2 / 1"  // Batı
+];
+      const idx = state.hands[i].findIndex(c => c.id === cardId);
+      if (idx >= 0) return { player: i, index: idx };
+    }
+    return null;
+  }
+
+
+
+  function currentLeadSuit() {
+    return state.currentTrick.length ? state.currentTrick[0].card.suit : null;
+  }
+
+
+  function cloneLite() {
+    return {
+      hands: state.hands.map(h => h.map(c => ({...c}))),
+      selectedTrump: state.selectedTrump,
+      leader: state.leader,
+      currentTurn: state.currentTurn,
+      currentTrick: state.currentTrick.map(x => ({...x})),
+      completedTricks: state.completedTricks.map(t => ({
+        leader: t.leader,
+        winner: t.winner,
+        trump: t.trump,
+        cards: t.cards.map(c => ({...c}))
+      })),
+      phase: state.phase,
+      winnerOfLastTrick: state.winnerOfLastTrick,
+      scores: { ...state.scores }
+    };
+  }
+
+
+window.addEventListener("load", init);
+})();
+
+</script>
+
+<div id="matchModal" class="match-modal hidden">
+
+    <div class="match-window">
+
+        <div class="match-title">
+            🏆 MAÇ BİTTİ 🏆
+        </div>
+
+        <div id="matchWinner" class="match-winner">
+            Kuzey - Güney Kazandı
+        </div>
+
+        <div id="matchScore" class="match-score">
+            61 - 54
+        </div>
+
+        <div class="match-buttons">
+
+            <button id="newMatchBtn">
+                🔄 Yeni Maç
+            </button>
+
+            <button id="closeMatchBtn">
+                Kapat
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
