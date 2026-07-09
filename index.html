@@ -2757,6 +2757,8 @@ function getPartner(player){
 
  async function dealNewHand() {
 
+    resetDeal();
+
     const snapshot = cloneState();
 
     if (state.hands.some(h => h.length || state.currentTrick.length || state.completedTricks.length)) {
@@ -2768,8 +2770,6 @@ function getPartner(player){
     state.dealNo++;
 
     resetBid();
-
-    resetDeal();
 
     addHistory(
         `Yeni el dağıtıldı. Başlayan oyuncu: ${PLAYER_POSITIONS[state.leader]}.`
