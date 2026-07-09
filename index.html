@@ -183,14 +183,11 @@ input[type="text"] {
     border: 1px solid rgba(255,255,255,.15);
 }
 
-#leaderSelect option,
-#trumpSelect option{
-    background-color: #ffffff;
-    color: #000000;
+
+select option{
+    background:#ffffff;
+    color:#000000;
 }
-
-
-
 
     button {
       cursor: pointer;
@@ -253,7 +250,13 @@ input[type="text"] {
     font-size: 11px;
 }
 
+.saved-item button[data-action="load"]{
+    border-color:#2ecc71;
+}
 
+.saved-item button[data-action="delete"]{
+    border-color:#e74c3c;
+}
 .seat-footer {
     display: flex;
     flex-direction: column;
@@ -624,17 +627,28 @@ input[type="text"] {
    PANELS
 ======================================================= */
 
-    .panel-box {
-    border-radius: 12px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    padding: 8px;
-    min-height: 0;
+.panel-box{
+    border-radius:12px;
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+
+    padding:6px;
+    min-height:0;
 }
 
-    .panel-box h2{
-    margin:0 0 6px 0;
+.panel-box h2{
+    margin:0 0 5px 0;
+
     font-size:13px;
+
+    font-weight:700;
+
+    color:#f5f5f5;
+
+    letter-spacing:.2px;
 }
 
     .panel-row {
@@ -658,9 +672,16 @@ input[type="text"] {
 
 
 .panel-field label{
-    font-size:12px;
-    color:#bfc7d5;
-    font-weight:600;
+    display:block;
+    margin-bottom:5px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#f5f5f5;
+
+    letter-spacing:.2px;
 }
 
 
@@ -730,7 +751,7 @@ input[type="text"] {
     width:300px;
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:8px;
 }
 
 
@@ -834,28 +855,58 @@ input[type="text"] {
    TOAST
 ======================================================= */
 
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(12,18,30,0.96);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 999px;
-      box-shadow: var(--shadow);
-      font-size: 13px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .18s ease, transform .18s ease;
-      z-index: 30;
-    }
+.toast{
+    position:fixed;
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-4px);
-    }
+    left:50%;
+    top:38%;
+
+    min-width:320px;
+    max-width:500px;
+
+    padding:14px 22px;
+
+    border-radius:14px;
+
+    background:rgba(12,18,30,.96);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+
+    color:var(--text);
+
+    font-size:16px;
+    font-weight:700;
+
+    text-align:center;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+transform:
+        translate(-50%,-50%)
+        scale(.92);
+
+    z-index:10000;
+}
+
+.toast.show{
+
+    opacity:1;
+
+    transform:
+        translate(-50%,-50%)
+        scale(1);
+
+}
+
+
 
     .legend {
       display: flex;
@@ -1180,6 +1231,116 @@ input[type="text"] {
 
 
 /* =======================================================
+   EL DAĞITMA SEÇENEKLERİ
+======================================================= */
+
+.lock-grid{
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+
+    gap:6px;
+
+    margin-top:6px;
+
+}
+
+.lock-grid label{
+
+    font-size:13px;
+
+}
+
+.center-btn{
+
+    text-align:center;
+
+    margin:8px 0;
+
+}
+
+.panel-sep{
+
+    margin:16px 0;
+
+    border:none;
+
+    border-top:1px solid rgba(255,255,255,.12);
+
+}
+
+.swap-header{
+
+    text-align:center;
+
+    font-weight:700;
+
+    margin-bottom:6px;
+
+}
+
+.swap-selects{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+}
+
+.swap-selects label{
+
+    display:block;
+
+    margin-bottom:5px;
+
+    font-size:12px;
+
+}
+
+.swap-selects select{
+
+    width:100%;
+
+}
+
+
+#dealOptionsContent,
+#savedHandsContent{
+    display:none;
+}
+
+#dealOptionsContent.open,
+#savedHandsContent.open{
+    display:block;
+}
+
+
+.collapse-title{
+
+    cursor:pointer;
+
+    user-select:none;
+
+}
+
+.collapse-title{
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.collapse-title:hover{
+
+    color:#ffd86b;
+
+}
+
+
+/* =======================================================
    RESPONSIVE
 ======================================================= */
 
@@ -1202,41 +1363,11 @@ input[type="text"] {
 </div>
 
     <div class="controls">
-
-<label><input type="checkbox" id="lock0"> Kuzey</label>
-<label><input type="checkbox" id="lock1"> Doğu</label>
-<label><input type="checkbox" id="lock2"> Güney</label>
-<label><input type="checkbox" id="lock3"> Batı</label>
-
-<button id="partialDealBtn">
-🔒 Sabit Dağıt
-</button>
-  
-<select id="swapPlayer1" class="swap-select">
-  <option value="0">Kuzey</option>
-  <option value="1">Doğu</option>
-  <option value="2">Güney</option>
-  <option value="3">Batı</option>
-</select>
-
-<select id="swapPlayer2" class="swap-select">
-  <option value="1">Doğu</option>
-  <option value="2">Güney</option>
-  <option value="3">Batı</option>
-  <option value="0">Kuzey</option>
-</select>
-
-<button id="swapHandsBtn">
-  Elleri Yer Değiştir
-</button>
-      <button class="primary" id="dealBtn">Yeni El Dağıt</button>
-
-<button id="bidStartBtn">
-    İhale Başlat
-</button>
-
-<button id="startBtn">Oyunu Başlat</button>
       <button id="showAllBtn">Tüm Eller Aç</button>
+      <button class="primary" id="dealBtn">Yeni El Dağıt</button>
+      <button id="bidStartBtn">İhale Başlat</button>
+      <button id="startBtn">Oyunu Başlat</button>
+      <button id="claimBtn">Claim</button>
       <button id="resetBtn">Bu Eli Sıfırla</button>
       <button id="undoBtn">Geri Al</button>
       <button id="redoBtn">İleri Al</button>
@@ -1320,8 +1451,6 @@ input[type="text"] {
 
   <div class="trick-grid" id="trickGrid"></div>
 
- 
-
   <!-- İHALE PANELİ BURADA -->
 
 </div>
@@ -1361,8 +1490,14 @@ input[type="text"] {
       </div>
     </div>
 
+
+
+<!-- ===== SAĞ PANEL BAŞLANGIÇ ===== -->
 <div class="right-panel">
 
+
+
+<!-- ===== İHALE BAŞLANGIÇ ===== -->
     <div class="panel-box">
         <h2>🏆 İhale</h2>
 
@@ -1389,16 +1524,102 @@ input[type="text"] {
         </div>
 
     </div>
+<!-- ===== İHALE BİTİŞ ===== -->
 
-    <div class="panel-box">
-        <h2>Kaydedilen eller</h2>
-        <div class="saved-list" id="savedList"></div>
+
+<!-- ===== EL DAĞITMA SEÇENEKLERİ BAŞLANGIÇ ===== -->
+<div class="panel-box">
+
+    <h2 class="collapse-title" id="dealOptionsToggle">
+        ▼ El Dağıtma Seçenekleri
+    </h2>
+
+    <div id="dealOptionsContent">
+
+        <div class="lock-grid">
+
+            <label><input type="checkbox" id="lock0"> Kuzey</label>
+            <label><input type="checkbox" id="lock2"> Güney</label>
+
+            <label><input type="checkbox" id="lock1"> Doğu</label>
+            <label><input type="checkbox" id="lock3"> Batı</label>
+
+        </div>
+
+        <div class="center-btn">
+            <button id="partialDealBtn">
+             🔒Seçilen Eller Dışındaki Elleri Tekrar Dağıt
+            </button>
+        </div>
+
+        <hr class="panel-sep">
+
+        <div class="swap-header">
+            Yer Değiştir
+        </div>
+
+        <div class="swap-selects">
+
+            <div>
+                <label>1. Oyuncu</label>
+                <select id="swapPlayer1">
+                    <option value="0">Kuzey</option>
+                    <option value="1">Doğu</option>
+                    <option value="2">Güney</option>
+                    <option value="3">Batı</option>
+                </select>
+            </div>
+
+            <div>
+                <label>2. Oyuncu</label>
+                <select id="swapPlayer2">
+                    <option value="0">Kuzey</option>
+                    <option value="1">Doğu</option>
+                    <option value="2">Güney</option>
+                    <option value="3">Batı</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="center-btn">
+
+            <button id="swapHandsBtn">
+                🔄 Seçilen Oyuncuların Ellerini Değiştir
+            </button>
+
+        </div>
+
     </div>
 
+</div>
+<!-- ===== EL DAĞITMA SEÇENEKLERİ BİTİŞ ===== -->
+
+
+
+
+
+
+<!-- ===== KAYDEDİLEN ELLER BAŞLANGIÇ ===== -->
+<div class="panel-box">
+
+    <h2 class="collapse-title" id="savedHandsToggle">
+        ▶ Kaydedilen Eller
+    </h2>
+
+    <div id="savedHandsContent">
+
+        <div class="saved-list" id="savedList"></div>
+
+    </div>
 
 </div>
+<!-- ===== KAYDEDİLEN ELLER BİTİŞ ===== -->
 
-</div>
+
+
+
+
 
 <!-- ===== OYUN İÇİ DİYALOG BAŞLANGIÇ ===== -->
 <div id="gameDialog" class="game-dialog hidden">
@@ -1448,7 +1669,10 @@ const el = (id) => document.getElementById(id);
    APPLICATION STATE
 ======================================================= */
   const state = {
+    claimUsed: false,
+    claimMode: "classic",
     dealNo: 0,
+    dealer: null,
     deckSeed: null,
     hands: [[], [], [], []],
     selectedTrump: "",
@@ -1564,6 +1788,8 @@ const changelog = {
 
     setupButtons();
 
+    setupCollapsiblePanels();
+
     renderChangelog();
 
     syncControlsFromState();
@@ -1591,21 +1817,19 @@ const changelog = {
     });
 
     // ÇİFT TIK
-    el(`name${i}`).addEventListener("dblclick",()=>{
+el(`name${i}`).addEventListener("dblclick",()=>{
 
-        if(state.lockedSeats.includes(player)){
+    if(state.lockedSeats.includes(player)){
 
-            state.lockedSeats =
-                state.lockedSeats.filter(x => x !== player);
+        unlockSeat(player);
 
-        }else{
+    }else{
 
-            state.lockedSeats.push(player);
+        lockSeat(player);
 
-        }
+    }
 
-        render();
-    });
+});
 }
     render();
 
@@ -1643,13 +1867,92 @@ el("closeMatchBtn").addEventListener("click",()=>{
   }
 
 
+function setupCollapsiblePanels(){
+
+    // ===== El Dağıtma Seçenekleri =====
+
+    const dealToggle =
+        document.getElementById("dealOptionsToggle");
+
+    const dealContent =
+        document.getElementById("dealOptionsContent");
+
+    // Varsayılan açık
+    dealContent.classList.add("open");
+
+    dealToggle.textContent =
+        "▼ El Dağıtma Seçenekleri";
+
+    dealToggle.addEventListener("click",()=>{
+
+        dealContent.classList.toggle("open");
+
+        dealToggle.textContent =
+            dealContent.classList.contains("open")
+            ? "▼ El Dağıtma Seçenekleri"
+            : "▶ El Dağıtma Seçenekleri";
+
+    });
+
+
+    // ===== Kaydedilen Eller =====
+
+    const savedToggle =
+        document.getElementById("savedHandsToggle");
+
+    const savedContent =
+        document.getElementById("savedHandsContent");
+
+    // Varsayılan kapalı
+    savedToggle.textContent =
+        "▶ Kaydedilen Eller";
+
+    savedToggle.addEventListener("click",()=>{
+
+        savedContent.classList.toggle("open");
+
+        savedToggle.textContent =
+            savedContent.classList.contains("open")
+            ? "▼ Kaydedilen Eller"
+            : "▶ Kaydedilen Eller";
+
+    });
+
+}
  
+
+
+
+
+function lockSeat(player){
+
+    if(!state.lockedSeats.includes(player)){
+        state.lockedSeats.push(player);
+    }
+
+    render();
+}
+
+function unlockSeat(player){
+
+    state.lockedSeats =
+        state.lockedSeats.filter(x => x !== player);
+
+    render();
+}
+
+
+
+
+
+
 /* =======================================================
    BUTTON EVENTS
 ======================================================= */
+
   function setupButtons() {
     el("showAllBtn").addEventListener("click", () => {
-
+ 
     // Hepsini aç
     if (state.lockedSeats.length !== 4) {
         state.lockedSeats = [0, 1, 2, 3];
@@ -1676,11 +1979,19 @@ el("swapHandsBtn").addEventListener(
 );
 
     el("dealBtn").addEventListener("click", () => {
+
+          // İhale açıksa yeni el dağıtılamaz
+    if (!el("gameDialog").classList.contains("hidden")) {
+
+        showToast("⚠ Önce ihaleyi tamamlayın.");
+
+        return;
+    }
       if (state.phase === "playing" && state.currentTrick.length && !confirm("Yeni el dağıtılsın mı? Mevcut tur silinecek.")) return;
       dealNewHand();
     });
     el("resetBtn").addEventListener("click", () => {
-      if (!state.initialSnapshot) return showToast("Önce bir el dağıt.");
+      if (!state.initialSnapshot) return showToast("Önce yeni bir el dağıtın.");
       restoreState(JSON.parse(JSON.stringify(state.initialSnapshot)));
       showToast("Bu el sıfırlandı.");
     });
@@ -1690,24 +2001,18 @@ el("swapHandsBtn").addEventListener(
     el("clearSavedBtn").addEventListener("click", clearSaved);
     el("bidStartBtn").addEventListener("click", openBidModal);
     el("startBtn").addEventListener("click", startGame);
+    el("claimBtn").addEventListener("click", onClaimClick);
+
     ui.trumpSelect.addEventListener("change", onTrumpChange);
     ui.leaderSelect.addEventListener("change", onLeaderChange);
-  }
 
+  }
 
 
 /* =======================================================
    APPLICATION SETTINGS
 ======================================================= */
-  function applyNames() {
-    el("name1").textContent = el("player1").value.trim() || "Kuzey";
-    el("name2").textContent = el("player2").value.trim() || "Doğu";
-    el("name3").textContent = el("player3").value.trim() || "Güney";
-    el("name4").textContent = el("player4").value.trim() || "Batı";
-    render();
-    saveAppData();
-    showToast("Oyuncu adları güncellendi.");
-  }
+
 
 function onTrumpChange() {
     state.selectedTrump = ui.trumpSelect.value || "";
@@ -2017,6 +2322,17 @@ function startNewMatch(){
 
 function openBidModal(){
 
+    // Önce kartlar dağıtılmış mı kontrol et
+    const allHandsReady =
+        state.hands.every(hand => hand.length === 13);
+
+    if(!allHandsReady){
+
+        showToast("İhaleye başlamadan önce tüm oyuncuların elinde 13 kart bulunmalıdır.");
+
+        return;
+    }
+
     determineBidStarter();
     resetBidState();
 
@@ -2075,6 +2391,8 @@ const forcedBid =
     state.bid.currentBid === null &&
     passCount === 3;
 
+state.bid.forcedSeven = forcedBid;
+
     // Mecburi teklif değilse PAS butonunu göster
     if (!forcedBid) {
 
@@ -2110,6 +2428,94 @@ const forcedBid =
 
         container.appendChild(btn);
     }
+}
+
+
+function renderForcedSevenDialog(){
+
+    document
+        .getElementById("gameDialog")
+        .classList.remove("hidden");
+
+    document.getElementById("mandatorySeven").textContent =
+    getSeatLabel(state.bid.winner) + " Karar Veriyor";
+
+    document.getElementById("bidPlayerName").textContent =
+        "Bu eli oynamak istiyor musunuz?";
+
+    const container =
+        document.getElementById("bidButtons");
+
+    container.innerHTML = "";
+
+// EVET
+const yesBtn =
+    document.createElement("button");
+
+yesBtn.className = "primary";
+
+yesBtn.textContent = "Evet";
+
+yesBtn.onclick = ()=>{
+
+    document
+        .getElementById("gameDialog")
+        .classList.add("hidden");
+
+    // Karar verildi
+    state.bid.forcedSeven = false;
+
+    // Oyunu başlat
+    reallyStartGame();
+};
+
+container.appendChild(yesBtn);
+
+
+// HAYIR
+const noBtn =
+    document.createElement("button");
+
+noBtn.className = "danger";
+
+noBtn.textContent = "Hayır";
+
+noBtn.onclick = ()=>{
+
+    document
+        .getElementById("gameDialog")
+        .classList.add("hidden");
+
+    // İhaleyi alan takım
+    const bidderTeam =
+        state.bid.winner % 2 === 0 ? "A" : "B";
+
+    // Rakip takım
+    const opponentTeam =
+        bidderTeam === "A" ? "B" : "A";
+
+    // Maç puanı
+    state.matchScore[bidderTeam] -= 7;
+    state.matchScore[opponentTeam] += 7;
+
+    render();
+
+    showToast(
+        getSeatLabel(state.bid.winner) +
+        " kağıdı attı."
+    );
+
+ //   setTimeout(() => {
+
+   //     dealNewHand();
+
+     //   openBidModal();
+
+//    }, 1800);
+
+ };
+
+container.appendChild(noBtn);
 }
 
 
@@ -2333,15 +2739,23 @@ function getMandatorySevenPlayer(starter){
 
 
 
+function getPartner(player){
 
+    return {
+        0: 2,
+        1: 3,
+        2: 0,
+        3: 1
+    }[player];
 
+}
 
 /* =======================================================
    GAME LOGIC
 ======================================================= */
 
 
- function dealNewHand() {
+ async function dealNewHand() {
 
     const snapshot = cloneState();
 
@@ -2349,17 +2763,7 @@ function getMandatorySevenPlayer(starter){
         state.redo = [];
     }
 
-    const deck = createDeck();
-
-    state.hands = [[], [], [], []];
-
-    for (let i = 0; i < deck.length; i++) {
-        state.hands[i % 4].push(deck[i]);
-    }
-
-    for (const hand of state.hands) {
-        hand.sort(compareCards);
-    }
+    await playDealAnimation();
 
     state.dealNo++;
 
@@ -2377,7 +2781,81 @@ function getMandatorySevenPlayer(starter){
 }
 
 
+async function playDealAnimation(){
+
+    // Önce tüm eller kapansın
+    state.lockedSeats = [];
+    state.revealedSeat = null;
+
+    // Boş eller göster
+    state.hands = [[], [], [], []];
+
+    render();
+
+    await new Promise(r => setTimeout(r, 180));
+
+    const deck = createDeck();
+
+    let index = 0;
+
+    const rounds = [4,3,3,3];
+
+    // İlk elde rastgele dağıtıcı seç
+    if(state.dealer == null){
+        state.dealer = Math.floor(Math.random() * 4);
+    }
+
+    // Dağıtım sırası (dağıtıcının sağından başlar)
+const order = [];
+
+for(let i = 1; i <= 4; i++){
+
+    order.push((state.dealer - i + 4) % 4);
+
+}
+
+    for(const amount of rounds){
+
+        for(const player of order){
+
+            // O oyuncuya kartları ver
+            for(let i=0;i<amount;i++){
+
+                state.hands[player].push(deck[index++]);
+
+            }
+
+            // O oyuncunun kartlarını sırala
+            state.hands[player].sort(compareCards);
+
+            render();
+
+            await new Promise(r => setTimeout(r, 280));
+
+        }
+
+    }
+
+    // Sonraki elde dağıtıcı değişsin
+    state.dealer = (state.dealer + 3) % 4;
+// veya
+// state.dealer = (state.dealer - 1 + 4) % 4;
+}
+
+
+
+
 function redealKeepingSelectedHands() {
+
+    const hasInitialDeal =
+    state.hands.every(hand => hand.length === 13);
+
+if (!hasInitialDeal) {
+
+    showToast("⚠ Sabit dağıt kullanmadan önce herkesin elinde 13 kart olmalı.");
+
+    return;
+}
 
     const locked = [];
 
@@ -2388,7 +2866,7 @@ function redealKeepingSelectedHands() {
     }
 
     if(locked.length === 0){
-        alert("En az 1 oyuncu seç.");
+        showToast("⚠ En az bir oyuncu seçin.");
         return;
     }
 
@@ -2472,6 +2950,8 @@ function swapPlayerHands() {
 
 
 function resetDeal(){
+  
+    state.claimUsed = false;
 
     state.selectedTrump = "";
 
@@ -2519,13 +2999,10 @@ function resetCurrentHand() {
 
 
 
-function startGame() {
 
-    state.selectedTrump = ui.trumpSelect.value || "";
 
-    state.leader = Number(ui.leaderSelect.value);
 
-    state.currentTurn = state.leader;
+function reallyStartGame(){
 
     state.phase = "playing";
 
@@ -2543,6 +3020,33 @@ function startGame() {
 
     render();
 }
+
+
+
+function startGame() {
+
+    lockSeat(getPartner(state.bid.winner));
+
+    state.selectedTrump = ui.trumpSelect.value || "";
+
+    state.leader = Number(ui.leaderSelect.value);
+
+    state.currentTurn = state.leader;
+
+    // Mecbur 7 kontrolü
+    if (
+        state.bid.forcedSeven &&
+        state.bid.currentBid === 7
+    ) {
+
+        renderForcedSevenDialog();
+
+        return;
+    }
+
+    reallyStartGame();
+}
+
 
   
 function isLegalPlay(player, card) {
@@ -2726,16 +3230,11 @@ function playCard(player, cardId) {
 
             state.currentTurn = winner;
 
-            if (isDealOver()) {
+if (isDealOver()){
 
-                calculateMatchScore();
+    finishDeal();
 
-                checkMatchWinner();
-
-                state.phase = "finished";
-
-                addHistory("El tamamlandı.");
-            }
+}
 
            state.trickAnimating = false;
 
@@ -2748,6 +3247,22 @@ function playCard(player, cardId) {
 
     render();
 }
+
+
+function finishDeal(){
+
+    calculateMatchScore();
+
+    checkMatchWinner();
+
+    state.phase = "finished";
+
+    addHistory("El tamamlandı.");
+
+    render();
+
+}
+
 
   function determineTrickWinner(trick, trump) {
     const leadSuit = trick[0].card.suit;
@@ -2805,6 +3320,208 @@ function undo() {
     render();
   }
 
+
+/* =======================================================
+   CLAİM SYSTEM
+======================================================= */
+
+function openClaimDialog(){
+
+    document
+        .getElementById("gameDialog")
+        .classList.remove("hidden");
+
+    document.getElementById("mandatorySeven").textContent =
+        "CLAIM";
+
+    document.getElementById("bidPlayerName").textContent =
+        "Teklifinizi seçin";
+
+    const container =
+        document.getElementById("bidButtons");
+
+    container.innerHTML = "";
+
+const played =
+    state.scores.A + state.scores.B;
+
+const remaining =
+    13 - played;
+
+// Her zaman teklif edebilir
+createClaimButton(container,0,"Eliniz Yok");
+
+// Kalan ele göre buton oluştur
+for(let give = 1; give <= Math.min(3, remaining); give++){
+
+    createClaimButton(
+        container,
+        give,
+        `Size ${give} El`
+    );
+
+}
+
+    const cancel =
+        document.createElement("button");
+
+    cancel.className = "pass";
+
+    cancel.textContent = "Vazgeç";
+
+    cancel.onclick = ()=>{
+
+        document
+            .getElementById("gameDialog")
+            .classList.add("hidden");
+
+    };
+
+    container.appendChild(cancel);
+
+}
+
+function createClaimButton(container,give,text){
+
+    const btn =
+        document.createElement("button");
+
+    btn.className = "primary";
+
+    btn.textContent = text;
+
+   btn.onclick = ()=>{
+
+    state.claimOffer = give;
+
+    document
+        .getElementById("gameDialog")
+        .classList.add("hidden");
+
+    openClaimAnswerDialog();
+
+};
+
+    container.appendChild(btn);
+
+}
+
+function openClaimAnswerDialog(){
+
+    document
+        .getElementById("gameDialog")
+        .classList.remove("hidden");
+
+    document.getElementById("mandatorySeven").textContent =
+        getSeatLabel(state.bid.winner) + " Claim Yaptı";
+
+    const texts = [
+        "Kalan elleri alıyorum.",
+        "Size 1 el bırakıyorum.",
+        "Size 2 el bırakıyorum.",
+        "Size 3 el bırakıyorum."
+    ];
+
+    document.getElementById("bidPlayerName").textContent =
+        texts[state.claimOffer];
+
+    const container =
+        document.getElementById("bidButtons");
+
+    container.innerHTML = "";
+
+    // EVET
+    const yesBtn =
+        document.createElement("button");
+
+    yesBtn.className = "primary";
+
+    yesBtn.textContent = "Evet";
+
+    yesBtn.onclick = ()=>{
+
+        state.claimUsed = true;
+
+document
+    .getElementById("gameDialog")
+    .classList.add("hidden");
+
+finishClaim();
+
+    };
+
+    container.appendChild(yesBtn);
+
+    // HAYIR
+    const noBtn =
+        document.createElement("button");
+
+    noBtn.className = "danger";
+
+    noBtn.textContent = "Hayır";
+
+    noBtn.onclick = ()=>{
+
+        state.claimUsed = true;
+
+        document
+            .getElementById("gameDialog")
+            .classList.add("hidden");
+
+        showToast("Claim reddedildi.");
+
+        render();
+
+    };
+
+    container.appendChild(noBtn);
+
+}
+
+function onClaimClick(){
+
+    openClaimDialog();
+
+}
+
+function finishClaim(){
+
+    const bidTeam =
+        TEAM_OF(state.bid.winner);
+
+    const otherTeam =
+        bidTeam === "A"
+            ? "B"
+            : "A";
+
+    const played =
+        state.scores.A + state.scores.B;
+
+    const remaining =
+        13 - played;
+
+    const give =
+        state.claimOffer;
+
+    const take =
+        remaining - give;
+
+    state.scores[bidTeam] += take;
+
+    state.scores[otherTeam] += give;
+
+    addHistory(
+        `Claim kabul edildi. ${
+            take
+        } el ${bidTeam}, ${
+            give
+        } el ${otherTeam} takımına yazıldı.`
+    );
+
+    finishDeal();
+
+}
+
 /* =======================================================
    RENDER SYSTEM
 ======================================================= */
@@ -2819,7 +3536,31 @@ function undo() {
     el("scoreA").textContent = state.matchScore.A;
     el("scoreB").textContent = state.matchScore.B;
     el("targetScore").textContent = state.matchTarget;
+    el("claimBtn").disabled = !canClaim();
+ 
   }
+
+function canClaim(){
+
+    if(state.completedTricks.length < 5){
+        return false;
+    }
+
+    if(state.claimUsed){
+        return false;
+    }
+
+    // Klasik mod
+    if(
+        state.claimMode === "classic" &&
+        state.currentTurn !== state.bid.winner
+    ){
+        return false;
+    }
+
+    return true;
+}
+
 
  function renderHand(playerIndex) {
     const handEl = el(`hand${playerIndex + 1}`);
@@ -2916,47 +3657,6 @@ previousSuit = card.suit;
     el(`seatMeta${playerIndex + 1}`).textContent = "";
   }
 
-function renderForcedBid(){
-
-    const container =
-        document.getElementById(
-            "bidButtons"
-        );
-
-    container.innerHTML = "";
-
-    for(let i=7;i<=13;i++){
-
-        const btn =
-            document.createElement(
-                "button"
-            );
-
-        btn.textContent = i;
-
-        btn.onclick = ()=>{
-
-            state.bid.currentBid = i;
-
-            state.bid.winner =
-                state.bid.currentPlayer;
-
-            finishBid();
-        };
-
-        container.appendChild(btn);
-    }
-
-    document.getElementById(
-        "bidPlayerName"
-    ).textContent =
-        getSeatLabel(
-            state.bid.currentPlayer
-        )
-        + " almak zorunda";
-}
-
-
 
  function renderTrickGrid() {
     ui.trickGrid.innerHTML = "";
@@ -3020,6 +3720,8 @@ function renderForcedBid(){
         wrap.querySelector('[data-action="delete"]').addEventListener("click", () => deleteSavedHand(item.id));
         ui.savedList.appendChild(wrap);
       });
+
+
   }
 
 
@@ -3299,7 +4001,7 @@ window.addEventListener("load", init);
     <div class="match-window">
 
         <div class="match-title">
-            🏆 MAÇ BİTTİ 🏆
+              MAÇ BİTTİ 
         </div>
 
         <div id="matchWinner" class="match-winner">
