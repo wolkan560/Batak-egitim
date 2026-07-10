@@ -459,11 +459,64 @@ select option{
     }
 
 
-    .card-back{
-      width:44px;height:58px;border-radius:12px;
-      background:linear-gradient(135deg,#334155,#0f172a);
-      border:1px solid rgba(255,255,255,.15);
+.card-back{
+    width:44px;
+    height:58px;
+    border-radius:12px;
+    position:relative;
+    overflow:hidden;
+
+
+    border:2px solid #ffffff;
+
+    box-shadow:
+        inset 0 0 0 2px #173d8f,
+        0 3px 8px rgba(0,0,0,.35);
 }
+
+.card-back.blue{
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #0A175E 0px,
+            #0A175E 3px,
+            #1f5bcc 3px,
+            #1f5bcc 6px
+        );
+}
+
+.card-back.red{
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #660712 0px,
+            #660712 3px,
+            #8C170E 3px,
+            #8C170E 6px
+        );
+}
+.card-back::before{
+    content:"♠";
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:22px;
+    color:white;
+    opacity:.9;
+}
+
+.card-back::after{
+    content:"";
+    position:absolute;
+    inset:5px;
+    border:1px solid rgba(255,255,255,.55);
+    border-radius:8px;
+}
+
+
+
+
     .card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 18px rgba(0,0,0,.22);
@@ -760,6 +813,33 @@ select option{
     gap:8px;
 }
 
+.deal-info{
+
+    background:rgba(15,23,42,.90);
+
+    border:1px solid rgba(255,255,255,.12);
+
+    border-radius:10px;
+
+    padding:8px 12px;
+
+    margin-bottom:10px;
+
+    color:#fff;
+
+    font-size:14px;
+
+    line-height:1.6;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.25);
+
+}
+
+.deal-info div{
+
+    font-weight:600;
+
+}
 
 /* =======================================================
    CHANGELOG PANEL
@@ -1387,6 +1467,11 @@ transform:
     <!-- ===== SOL PANEL BAŞLANGIÇ ===== -->
     <div class="left-panel">
 
+      <div id="dealInfo" class="deal-info">
+    <div id="dealerInfo">🂠 Dağıtan : -</div>
+    <div id="mandatoryInfo">🗣 Mecburcu : -</div>
+      </div>
+
         <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
         <div class="score-board">
 
@@ -1674,43 +1759,64 @@ const el = (id) => document.getElementById(id);
 /* =======================================================
    APPLICATION STATE
 ======================================================= */
-  const state = {
+const state = {
+
+    mandatoryPlayer: null,
+    currentDealer: null,
+
     claimUsed: false,
     claimMode: "classic",
+
     dealNo: 0,
     dealer: null,
     deckSeed: null,
+
     hands: [[], [], [], []],
+
     selectedTrump: "",
     leader: 0,
     contractInfo: "",
+
     currentTurn: 0,
     currentTrick: [],
     completedTricks: [],
+
     history: [],
     redo: [],
+
     revealedSeat: null,
     lockedSeats: [],
+
     trickAnimating: false,
+
     matchTarget: 41,
     extraDeal: false,
+
     phase: "distribution",
+
     winnerOfLastTrick: null,
+
     savedHands: [],
-    scores: { A: 0, B: 0 },
+
+    scores: {
+        A: 0,
+        B: 0
+    },
+
     matchScore: {
-    A: 0,
-    B: 0
-},
+        A: 0,
+        B: 0
+    },
+
     bidStarter: null,
-    nextBidStarter: null,
+
     bid: {
         currentBid: null,
-    winner: null,
-    currentPlayer: null,
-    passed: [false, false, false, false],
-    activePlayers: [true,true,true,true],
-    passCount: 0
+        winner: null,
+        currentPlayer: null,
+        passed: [false, false, false, false],
+        activePlayers: [true,true,true,true],
+        passCount: 0
     }
 };
 
@@ -2328,7 +2434,6 @@ function startNewMatch(){
 
 function openBidModal(){
 
-    // Önce kartlar dağıtılmış mı kontrol et
     const allHandsReady =
         state.hands.every(hand => hand.length === 13);
 
@@ -2339,17 +2444,15 @@ function openBidModal(){
         return;
     }
 
-    determineBidStarter();
     resetBidState();
 
-    state.revealedSeat =
-        state.bid.currentPlayer;
+    state.revealedSeat = state.bid.currentPlayer;
 
-    render(); // BUNU EKLE
+    render();
 
     document
-    .getElementById("gameDialog")
-    .classList.remove("hidden");
+        .getElementById("gameDialog")
+        .classList.remove("hidden");
 
     renderBidOptions();
 }
@@ -2581,51 +2684,29 @@ function resetBid(){
 
 
 
-
 function resetBidState(){
 
     state.bid = {
+
         currentBid: null,
+
         winner: null,
+
         currentPlayer: state.bidStarter,
-        passed: [false, false, false, false],
-        activePlayers: [true, true, true, true],
+
+        passed: [false,false,false,false],
+
+        activePlayers: [true,true,true,true],
+
         passCount: 0,
-        hasBid: [false, false, false, false]
+
+        hasBid: [false,false,false,false]
+
     };
+
 }
 
 
-
- function determineBidStarter(){
-
-    const BID_ROTATION = [0,3,2,1];
-
-    if(state.nextBidStarter === null){
-
-        state.bidStarter =
-            BID_ROTATION[
-                Math.floor(
-                    Math.random()*4
-                )
-            ];
-
-    }else{
-
-        state.bidStarter =
-            state.nextBidStarter;
-    }
-
-    const idx =
-        BID_ROTATION.indexOf(
-            state.bidStarter
-        );
-
-    state.nextBidStarter =
-        BID_ROTATION[
-            (idx + 1) % 4
-        ];
-}
 
 
 
@@ -2812,6 +2893,18 @@ async function playDealAnimation(){
     if(state.dealer == null){
         state.dealer = Math.floor(Math.random() * 4);
     }
+
+
+// Bu elde gerçekten dağıtan kişi
+state.currentDealer = state.dealer;
+
+// Mecburcu dağıtanın kendisidir
+state.mandatoryPlayer = state.currentDealer;
+
+// İhaleyi dağıtıcının sağındaki oyuncu açar
+state.bidStarter = (state.currentDealer + 3) % 4;
+
+
 
     // Dağıtım sırası (dağıtıcının sağından başlar)
 const order = [];
@@ -3545,6 +3638,13 @@ function finishClaim(){
     el("scoreB").textContent = state.matchScore.B;
     el("targetScore").textContent = state.matchTarget;
     el("claimBtn").disabled = !canClaim();
+
+el("dealerInfo").textContent =
+    "🂠 Dağıtan : " + getSeatLabel(state.currentDealer);
+
+el("mandatoryInfo").textContent =
+    "🗣 Mecburcu : " +
+    getSeatLabel(state.mandatoryPlayer);
  
   }
 
@@ -3612,7 +3712,9 @@ handEl.ondrop = (e) => {
 ){
         for(let i=0;i<hand.length;i++){
             const back=document.createElement("div");
-            back.className="card-back";
+           // kart rengini seç
+            back.className = "card-back blue";
+            //back.className = "card-back red";
             handEl.appendChild(back);
         }
         el(`count${playerIndex + 1}`).textContent = `${hand.length} kart`;
