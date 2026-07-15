@@ -1,56 +1,4 @@
 <!DOCTYPE html>
-
-<!--
-==========================================================
- Batak Eğitim Masası
-----------------------------------------------------------
- Version : v6.1
-==========================================================
- SÜRÜM NOTLARI
-==========================================================
-
-DONE v6.0
-✓ Maç sistemi eklendi
-✓ Maç sonu popup eklendi
-✓ Yeni Maç sistemi
-✓ Maç puan tablosu
-✓ Hedef puan sistemi
-✓ Uzatma eli sistemi
-✓ Son kart bekleme süresi
-✓ Bekleme sırasında kart oynama kilidi
-✔ Üst başlıktaki açıklama metni kaldırıldı.
-✔ Topbar daha kompakt hale getirildi.
-✔ Hamle Geçmişi kaldırıldı.
-✔ Yerine Geliştirme Günlüğü eklendi.
-✔ Kullanılmayan renderLog() sistemi temizlendi.
-✔ Kod mimarisi tamamen yeniden düzenlendi.
-✔ Fonksiyonlar kategorilere ayrıldı.
-✔ HTML, CSS ve JavaScript bölümleri temizlendi.
-✔ Render sistemi sadeleştirildi.
-✔ Save / Load sistemi yeniden düzenlendi.
-✔ Sabit Dağıt özelliği eklendi.
-✔ Elleri Yer Değiştir özelliği eklendi.
-✔ İhale sistemi altyapısı tamamlandı.
-✔ Skor sistemi geliştirildi.
-✔ 41'de biter kuralı eklendi.
-✔ Geliştirme Günlüğü paneli eklendi.
-✔ Gereksiz üst bilgi alanları kaldırıldı.
-✔ Takım A / Takım B etiketleri kaldırıldı.
-✔ Başlangıç bilgileri sadeleştirildi.
-✔ Oyuncu adı düzenleme paneli kaldırıldı.
-✔ Açıklama paneli kaldırıldı.
-✔ 1080p tam ekran görünümü optimize edildi.
-✔ 1080p pencere modu büyük ölçüde optimize edildi.
-✔ Arayüz daha ferah ve gerçek masa görünümüne yaklaştırıldı.
-
-TODO v6.0
-□ Responsive düzen tamamlanacak.
-□ Sağ panel optimize edilecek.
-□ 1080p görünümü iyileştirilecek.
-
-==========================================================
--->
-
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -58,12 +6,6 @@ TODO v6.0
   <title>Batak Eğitim Masası</title>
   <style>
 
-/* =======================================================
-   DONE v6.0
-----------------------------------------------------------
-   - Üst başlıktaki açıklama metni kaldırıldı.
-   - Topbar daha kompakt hale getirildi.
-======================================================= */
 
 /* =======================================================
    ROOT
@@ -507,7 +449,17 @@ select option{
       font-size: 12px;
       color: var(--muted);
     }
+.count-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
+.claim-player-btn {
+    padding: 3px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+}
 
     .count {
       font-size: 13px;
@@ -1506,8 +1458,7 @@ transform:
       <button id="showAllBtn">Tüm Eller Aç</button>
       <button class="primary" id="dealBtn">Yeni El Dağıt</button>
       <button id="bidStartBtn">İhale Başlat</button>
-      <button id="startBtn">Oyunu Başlat</button>
-      <button id="claimBtn">Claim</button>
+      <button id="startBtn">Eli Başlat</button>
       <button id="resetBtn">Bu Eli Sıfırla</button>
       <button id="undoBtn">Geri Al</button>
       <button id="redoBtn">İleri Al</button>
@@ -1612,7 +1563,10 @@ transform:
             <div class="seat-name">
               <div class="name" id="name1">Kuzey</div>
             </div>
-            <div class="count" id="count1">13 kart</div>
+            <div class="count-area">
+    <div class="count" id="count1">13 kart</div>
+    <div id="claimSlot1"></div>
+</div>
           </div>
           <div class="hand" id="hand1"></div>
          <div class="seat-footer">
@@ -1627,7 +1581,10 @@ transform:
               <div class="seat-name">
                 <div class="name" id="name4">Batı</div>
               </div>
-              <div class="count" id="count4">13 kart</div>
+              <div class="count-area">
+    <div class="count" id="count4">13 kart</div>
+    <div id="claimSlot4"></div>
+</div>
             </div>
             <div class="hand" id="hand4"></div>
            <div class="seat-footer">
@@ -1649,7 +1606,10 @@ transform:
               <div class="seat-name">
                 <div class="name" id="name2">Doğu</div>
               </div>
-              <div class="count" id="count2">13 kart</div>
+              <div class="count-area">
+    <div class="count" id="count2">13 kart</div>
+    <div id="claimSlot2"></div>
+</div>
             </div>
             <div class="hand" id="hand2"></div>
             <div class="seat-footer">
@@ -1666,7 +1626,10 @@ transform:
             <div class="seat-name">
               <div class="name" id="name3">Güney</div>
             </div>
-            <div class="count" id="count3">13 kart</div>
+            <div class="count-area">
+    <div class="count" id="count3">13 kart</div>
+    <div id="claimSlot3"></div>
+</div>
           </div>
           <div class="hand" id="hand3"></div>
          <div class="seat-footer">
@@ -2284,7 +2247,7 @@ el("swapHandsBtn").addEventListener(
     el("clearSavedBtn").addEventListener("click", clearSaved);
     el("bidStartBtn").addEventListener("click", openBidModal);
     el("startBtn").addEventListener("click", startGame);
-    el("claimBtn").addEventListener("click", onClaimClick);
+
 
     ui.trumpSelect.addEventListener("change", onTrumpChange);
     ui.leaderSelect.addEventListener("change", onLeaderChange);
@@ -4092,6 +4055,48 @@ function finishClaim(){
 
 }
 
+
+function renderClaimButton() {
+
+    // Önce tüm Claim alanlarını temizle
+    for (let i = 1; i <= 4; i++) {
+        const slot = document.getElementById(`claimSlot${i}`);
+
+        if (slot) {
+            slot.innerHTML = "";
+        }
+    }
+
+    // İhaleyi alan oyuncu yoksa gösterme
+    if (
+        state.bid.winner === null ||
+        state.bid.winner === undefined
+    ) {
+        return;
+    }
+
+    // Claim şartları oluşmadıysa gösterme
+    if (!canClaim()) {
+        return;
+    }
+
+    const winner = state.bid.winner;
+
+    // Oyuncu indexleri 0-3, HTML seat numaraları 1-4
+    const slot =
+        document.getElementById(`claimSlot${winner + 1}`);
+
+    if (!slot) return;
+
+    const button = document.createElement("button");
+
+    button.textContent = "🤝 Claim";
+    button.className = "claim-player-btn";
+    button.onclick = onClaimClick;
+
+    slot.appendChild(button);
+}
+
 /* =======================================================
    RENDER SYSTEM
 ======================================================= */
@@ -4106,7 +4111,7 @@ function finishClaim(){
     el("scoreA").textContent = state.matchScore.A;
     el("scoreB").textContent = state.matchScore.B;
     el("targetScore").textContent = state.matchTarget;
-    el("claimBtn").disabled = !canClaim();
+    renderClaimButton();
 
 el("dealerInfo").textContent =
     "🂠 Dağıtan : " + getSeatLabel(state.currentDealer);
@@ -4158,18 +4163,20 @@ else {
 
 function canClaim(){
 
+    // En az 5 el tamamlanmış olmalı
     if(state.completedTricks.length < 5){
         return false;
     }
 
+    // Claim daha önce kullanılmışsa tekrar kullanılamaz
     if(state.claimUsed){
         return false;
     }
 
-    // Klasik mod
+    // İhaleyi alan oyuncu olmalı
     if(
-        state.claimMode === "classic" &&
-        state.currentTurn !== state.bid.winner
+        state.bid.winner === null ||
+        state.bid.winner === undefined
     ){
         return false;
     }
