@@ -106,6 +106,103 @@ TODO v6.0
 
 
 /* =======================================================
+   VERSİYON NOTLARI
+======================================================= */
+.version-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.version-item {
+    position: relative;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.06);
+    cursor: pointer;
+}
+
+.version-popup {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    margin-top: 8px;
+    width: 280px;
+    padding: 14px;
+    border-radius: 10px;
+    background: #111827;
+    border: 1px solid rgba(255,255,255,.15);
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    z-index: 1000;
+}
+
+.version-item:hover .version-popup {
+    display: block;
+}
+
+.version-popup p {
+    margin: 6px 0;
+    font-size: 12px;
+}
+
+
+/* =======================================================
+   ===== AYARLAR PENCERESİ ===== 
+======================================================= */
+
+.settings-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+}
+
+.settings-modal.hidden {
+    display: none;
+}
+
+.settings-box {
+    width: 360px;
+    max-width: 90%;
+    padding: 22px;
+    border-radius: 14px;
+
+    background: #111827;
+    border: 1px solid rgba(255,255,255,.15);
+    box-shadow: 0 20px 50px rgba(0,0,0,.55);
+
+    text-align: center;
+}
+
+.settings-box h2 {
+    margin-top: 0;
+}
+
+
+.settings-section {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.settings-section label {
+    margin: 0;
+}
+
+.settings-section select,
+.settings-section input {
+    width: 100%;
+}
+
+
+/* =======================================================
    APP LAYOUT
 ======================================================= */
 
@@ -841,50 +938,6 @@ select option{
 
 }
 
-/* =======================================================
-   CHANGELOG PANEL
-======================================================= */
-
-.changelog{
-
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    font-size:12px;
-
-}
-
-.changelog-version{
-
-    color:#ffd166;
-    font-weight:700;
-
-}
-
-.changelog-status{
-
-    color:var(--muted);
-    margin-bottom:6px;
-
-}
-
-.changelog-title{
-
-    color:#8bffb0;
-    font-weight:700;
-    margin-top:8px;
-
-}
-
-.changelog-item{
-
-    padding-left:8px;
-    color:#ddd;
-
-}
-
-
-
 
 /* =======================================================
    SCORE BOARD
@@ -1449,6 +1502,7 @@ transform:
 </div>
 
     <div class="controls">
+      <button id="settingsBtn">⚙️ Ayarlar</button>
       <button id="showAllBtn">Tüm Eller Aç</button>
       <button class="primary" id="dealBtn">Yeni El Dağıt</button>
       <button id="bidStartBtn">İhale Başlat</button>
@@ -1499,7 +1553,51 @@ transform:
 
     <div class="panel-box">
         <h2>📋 Geliştirme Günlüğü</h2>
-        <div id="changelog"></div>
+        <div class="version-list">
+
+    <div class="version-item">
+        <strong>v6.2 🚧</strong>
+
+        <div class="version-popup">
+            <b>v6.2 — Geliştiriliyor</b>
+            <p>• Maç bitiş puanı seçimi</p>
+            <p>• Seçilebilir ihale sistemi</p>
+            <p>• Yeni ihale sistemi</p>
+            <p>• Yeni mecburcu sistemi</p>
+            <p>• Görsel iyileştirmeler</p>
+            <p>• Kod sadeleştirme</p>
+        </div>
+    </div>
+
+    <div class="version-item">
+        <strong>v6.1 ✅</strong>
+
+        <div class="version-popup">
+            <b>v6.1 — Tamamlandı</b>
+            <p>• Claim sistemi</p>
+            <p>• Mecburi 7</p>
+            <p>• 4-3-3-3 gerçek kart dağıtımı</p>
+            <p>• Dağıtım animasyonu</p>
+            <p>• Dağıtan ve mecburcu sistemi</p>
+            <p>• Oyun ve arayüz düzeltmeleri</p>
+        </div>
+    </div>
+
+    <div class="version-item">
+        <strong>v6.0 ✅</strong>
+
+        <div class="version-popup">
+            <b>v6.0 — Tamamlandı</b>
+            <p>• Eğitim ve Oyun Modu</p>
+            <p>• İhale sistemi</p>
+            <p>• Skor sistemi</p>
+            <p>• Geri / İleri</p>
+            <p>• Kaydedilen eller</p>
+            <p>• Kart sürükle bırak</p>
+        </div>
+    </div>
+
+</div>
     </div>
 
     </div>
@@ -1764,12 +1862,17 @@ const state = {
     mandatoryPlayer: null,
     currentDealer: null,
 
+    mandatoryRule: "maker",
+
     claimUsed: false,
     claimMode: "classic",
 
     dealNo: 0,
     dealer: null,
     deckSeed: null,
+
+    dealPattern: "4-3-3-3",
+    cardBackTheme: "blue",
 
     hands: [[], [], [], []],
 
@@ -1839,55 +1942,6 @@ const state = {
 };
 
 
-/* =======================================================
-   CHANGELOG DATA
-======================================================= */
-
-const changelog = {
-
-    version: "v6.0",
-
-    status: "Development",
-
-    done: [
-
-        "Kod mimarisi yeniden düzenlendi",
-
-        "JavaScript fonksiyonları kategorilere ayrıldı",
-
-        "CSS bölümleri düzenlendi",
-
-        "Topbar sadeleştirildi",
-
-        "Sağ panel optimize edildi",
-
-        "Responsive görünüm iyileştirildi",
-
-        "Geliştirme Günlüğü eklendi",
-
-        "Yeni ihale sistemi altyapısı oluşturuldu",
-
-        "1080p tam ekran görünümü optimize edildi",
-
-        "1080p pencere modu büyük ölçüde optimize edildi",
-
-        "Arayüz daha ferah ve gerçek masa görünümüne yaklaştırıldı",
-
-    ],
-
-    todo: [
-
-        "Claim (Kalan Elleri Teklif Et)",
-
-        "Mecburi 7",
-
-        "Kağıdı At"
-
-    ]
-
-};
-
-
 
 /* =======================================================
    INITIALIZATION
@@ -1901,8 +1955,6 @@ const changelog = {
     setupButtons();
 
     setupCollapsiblePanels();
-
-    renderChangelog();
 
     syncControlsFromState();
 
@@ -2063,6 +2115,125 @@ function unlockSeat(player){
 ======================================================= */
 
   function setupButtons() {
+
+const mandatoryRuleSelect =
+    document.getElementById("mandatoryRuleSelect");
+
+mandatoryRuleSelect.value = state.mandatoryRule;
+
+mandatoryRuleSelect.addEventListener("change", () => {
+
+    state.mandatoryRule = mandatoryRuleSelect.value;
+
+    saveAppData();
+
+    showToast(
+        state.mandatoryRule === "maker"
+            ? "🗣 Mecburcu sistemi: Yapana Kalır"
+            : "🗣 Mecburcu sistemi: Koltuk Altına Kalır"
+    );
+
+});
+
+const dealPatternSelect = document.getElementById("dealPatternSelect");
+
+dealPatternSelect.value = state.dealPattern;
+
+dealPatternSelect.addEventListener("change", () => {
+
+    state.dealPattern = dealPatternSelect.value;
+
+    saveAppData();
+
+    showToast(
+        `🂠 Dağıtma şekli ${state.dealPattern} olarak ayarlandı.`
+    );
+
+});
+
+const cardBackSelect = document.getElementById("cardBackSelect");
+
+cardBackSelect.value = state.cardBackTheme;
+
+cardBackSelect.addEventListener("change", () => {
+
+    state.cardBackTheme = cardBackSelect.value;
+
+    render();
+
+    showToast(
+        state.cardBackTheme === "blue"
+            ? "🃏 Kart arka yüzü Mavi olarak ayarlandı."
+            : "🃏 Kart arka yüzü Kırmızı olarak ayarlandı."
+    );
+
+});
+
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsModal = document.getElementById("settingsModal");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+
+const matchTargetSelect = document.getElementById("matchTargetSelect");
+const customMatchTarget = document.getElementById("customMatchTarget");
+
+// Mevcut hedef puanı seçili göster
+matchTargetSelect.value = String(state.matchTarget);
+
+matchTargetSelect.addEventListener("change", () => {
+
+    if (matchTargetSelect.value === "custom") {
+
+        customMatchTarget.classList.remove("hidden");
+        customMatchTarget.focus();
+
+    } else {
+
+        customMatchTarget.classList.add("hidden");
+
+        state.matchTarget = Number(matchTargetSelect.value);
+
+        render();
+        saveAppData();
+
+        showToast(
+            `🏆 Maç bitiş puanı ${state.matchTarget} olarak ayarlandı.`
+        );
+    }
+
+customMatchTarget.addEventListener("change", () => {
+
+    const value = Number(customMatchTarget.value);
+
+    if (!Number.isInteger(value) || value < 1) {
+        showToast("⚠ Geçerli bir maç bitiş puanı girin.");
+        return;
+    }
+
+    state.matchTarget = value;
+
+    render();
+    saveAppData();
+
+    showToast(
+        `🏆 Maç bitiş puanı ${state.matchTarget} olarak ayarlandı.`
+    );
+
+});
+
+});
+
+
+
+settingsBtn.addEventListener("click", () => {
+    settingsModal.classList.remove("hidden");
+});
+
+closeSettingsBtn.addEventListener("click", () => {
+    settingsModal.classList.add("hidden");
+});
+
+
+
     el("showAllBtn").addEventListener("click", () => {
  
     // Hepsini aç
@@ -2194,10 +2365,15 @@ function onTrumpChange() {
   
 
 function saveAppData() {
-    const payload = {
-        dealNo: state.dealNo,
-        savedHands: state.savedHands
-    };
+
+const payload = {
+    dealNo: state.dealNo,
+    savedHands: state.savedHands,
+    matchTarget: state.matchTarget,
+    cardBackTheme: state.cardBackTheme,
+    dealPattern: state.dealPattern,
+    mandatoryRule: state.mandatoryRule
+};
 
     localStorage.setItem(
         STORAGE_KEY,
@@ -2206,6 +2382,7 @@ function saveAppData() {
 }
 
 function loadAppData() {
+
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
 
@@ -2214,11 +2391,47 @@ function loadAppData() {
 
         state.dealNo = payload.dealNo || 0;
 
+        // Maç bitiş puanını yükle
+        if (
+            Number.isInteger(payload.matchTarget) &&
+            payload.matchTarget > 0
+        ) {
+            state.matchTarget = payload.matchTarget;
+        }
+
+        // Kart arka yüzü temasını yükle
+        if (
+            payload.cardBackTheme === "blue" ||
+            payload.cardBackTheme === "red"
+        ) {
+            state.cardBackTheme = payload.cardBackTheme;
+        }
+
+        // Kayıtlı elleri yükle
         state.savedHands = Array.isArray(payload.savedHands)
             ? payload.savedHands
             : [];
 
+       // Dağıtma şeklini yükle
+if (
+    payload.dealPattern === "4-3-3-3" ||
+    payload.dealPattern === "3-2-2-2-2-2" ||
+    payload.dealPattern === "4-4-5"
+) {
+    state.dealPattern = payload.dealPattern;
+}
+
+// Mecburcu kuralını yükle
+if (
+    payload.mandatoryRule === "maker" ||
+    payload.mandatoryRule === "underSeat" ||
+    payload.mandatoryRule === "none"
+) {
+    state.mandatoryRule = payload.mandatoryRule;
+}
+
     } catch (e) {}
+
 }
 
 
@@ -2459,9 +2672,146 @@ function openBidModal(){
 
 
 
+/* =======================================================
+   İhale Seçenekleri Başlangıç
+======================================================= */
+
 function renderBidOptions(){
 
     state.revealedSeat = state.bid.currentPlayer;
+
+    const player = state.bid.currentPlayer;
+
+    const container =
+        document.getElementById("bidButtons");
+
+    container.innerHTML = "";
+
+
+// ==================================================
+// MECBURCU YOK
+// ==================================================
+if (state.mandatoryRule === "none") {
+
+    if (state.bid.currentBid !== null) {
+
+        document.getElementById("mandatorySeven").textContent =
+            getSeatLabel(state.bid.winner) +
+            " " +
+            state.bid.currentBid +
+            " dedi";
+
+    } else {
+
+        document.getElementById("mandatorySeven").textContent =
+            "Mecburcu yok";
+    }
+
+    document.getElementById("bidPlayerName").textContent =
+        getSeatLabel(player) + " teklif seç";
+
+
+    // Her oyuncu PAS diyebilir
+    const passBtn = document.createElement("button");
+
+    passBtn.textContent = "PAS";
+    passBtn.className = "pass";
+    passBtn.onclick = () => makeBidPass();
+
+    container.appendChild(passBtn);
+
+
+    // İlk teklif en az 8
+    const start =
+        state.bid.currentBid === null
+            ? 8
+            : state.bid.currentBid + 1;
+
+    for (let i = start; i <= 13; i++) {
+
+        const btn = document.createElement("button");
+
+        btn.textContent = i;
+        btn.onclick = () => makeBid(i);
+
+        container.appendChild(btn);
+    }
+
+    return;
+}
+
+
+
+
+
+    // ==================================================
+    // KOLTUK ALTINA KALIR
+    // ==================================================
+    if (state.mandatoryRule === "underSeat") {
+
+        if (state.bid.currentBid !== null) {
+
+            document.getElementById("mandatorySeven").textContent =
+                getSeatLabel(state.bid.winner) +
+                " " +
+                state.bid.currentBid +
+                " dedi";
+
+        } else {
+
+            document.getElementById("mandatorySeven").textContent =
+                getSeatLabel(player) +
+                " mecburcu";
+        }
+
+        document.getElementById("bidPlayerName").textContent =
+            getSeatLabel(player) + " teklif seç";
+
+
+        // İlk mecburcu PAS diyemez
+        const firstMandatoryBid =
+            state.bid.currentBid === null;
+
+        // İlk teklif verildikten sonra PAS göster
+        if (!firstMandatoryBid) {
+
+            const passBtn =
+                document.createElement("button");
+
+            passBtn.textContent = "PAS";
+            passBtn.className = "pass";
+            passBtn.onclick = () => makeBidPass();
+
+            container.appendChild(passBtn);
+        }
+
+
+        // İlk mecburcu 7'den başlar
+        // Sonraki oyuncular mevcut teklifin üstünden başlar
+        const start =
+            state.bid.currentBid === null
+                ? 7
+                : state.bid.currentBid + 1;
+
+        for (let i = start; i <= 13; i++) {
+
+            const btn =
+                document.createElement("button");
+
+            btn.textContent = i;
+
+            btn.onclick = () => makeBid(i);
+
+            container.appendChild(btn);
+        }
+
+        return;
+    }
+
+
+    // ==================================================
+    // YAPANA KALIR - MEVCUT SİSTEM
+    // ==================================================
 
     if(state.bid.currentBid){
 
@@ -2481,28 +2831,20 @@ function renderBidOptions(){
             " mecbur 7'ci";
     }
 
-    const player = state.bid.currentPlayer;
-
     document.getElementById("bidPlayerName").textContent =
         getSeatLabel(player) + " teklif seç";
 
-    const container =
-        document.getElementById("bidButtons");
 
-    container.innerHTML = "";
+    const passCount =
+        state.bid.passed.filter(x => x).length;
 
-    // İlk 3 oyuncu PAS dediyse son oyuncu mecburi teklif verecek
+    const forcedBid =
+        state.bid.currentBid === null &&
+        passCount === 3;
 
-const passCount =
-    state.bid.passed.filter(x => x).length;
+    state.bid.forcedSeven = forcedBid;
 
-const forcedBid =
-    state.bid.currentBid === null &&
-    passCount === 3;
 
-state.bid.forcedSeven = forcedBid;
-
-    // Mecburi teklif değilse PAS butonunu göster
     if (!forcedBid) {
 
         const passBtn =
@@ -2515,7 +2857,7 @@ state.bid.forcedSeven = forcedBid;
         container.appendChild(passBtn);
     }
 
-    // Tekliflerin başlangıcı
+
     let start;
 
     if (forcedBid) {
@@ -2525,6 +2867,7 @@ state.bid.forcedSeven = forcedBid;
     } else {
         start = state.bid.currentBid + 1;
     }
+
 
     for(let i = start; i <= 13; i++){
 
@@ -2538,6 +2881,11 @@ state.bid.forcedSeven = forcedBid;
         container.appendChild(btn);
     }
 }
+
+/* =======================================================
+   İhale Seçenekleri Bitiş
+======================================================= */
+
 
 
 function renderForcedSevenDialog(){
@@ -2631,11 +2979,6 @@ container.appendChild(noBtn);
 
 function nextBidPlayer(){
 
-    if(state.bid.hasBid.every(x => x)){
-        finishBid();
-        return;
-    }
-
     const rotation = {
         0: 3,
         3: 2,
@@ -2643,11 +2986,54 @@ function nextBidPlayer(){
         1: 0
     };
 
+// ===== MECBURCU YOK =====
+if (state.mandatoryRule === "none") {
+
     let p = state.bid.currentPlayer;
 
-    do{
+    do {
         p = rotation[p];
-    }while(state.bid.hasBid[p]);
+    } while (state.bid.passed[p]);
+
+    state.bid.currentPlayer = p;
+    state.revealedSeat = p;
+
+    render();
+    renderBidOptions();
+
+    return;
+}
+
+
+    // ===== KOLTUK ALTINA KALIR =====
+    if (state.mandatoryRule === "underSeat") {
+
+        let p = state.bid.currentPlayer;
+
+        do {
+            p = rotation[p];
+        } while (state.bid.passed[p]);
+
+        state.bid.currentPlayer = p;
+        state.revealedSeat = p;
+
+        render();
+        renderBidOptions();
+
+        return;
+    }
+
+    // ===== YAPANA KALIR - MEVCUT SİSTEM =====
+    if (state.bid.hasBid.every(x => x)) {
+        finishBid();
+        return;
+    }
+
+    let p = state.bid.currentPlayer;
+
+    do {
+        p = rotation[p];
+    } while (state.bid.hasBid[p]);
 
     state.bid.currentPlayer = p;
     state.revealedSeat = p;
@@ -2686,21 +3072,33 @@ function resetBid(){
 
 function resetBidState(){
 
+    let firstPlayer = state.bidStarter;
+
+    // ===== KOLTUK ALTINA KALIR =====
+    // İlk konuşan, dağıtandan sonraki oyuncu
+    if (state.mandatoryRule === "underSeat") {
+
+        const nextSeat = {
+            0: 3, // Kuzey → Batı
+            3: 2, // Batı → Güney
+            2: 1, // Güney → Doğu
+            1: 0  // Doğu → Kuzey
+        };
+
+        firstPlayer = nextSeat[state.currentDealer];
+    }
+
     state.bid = {
 
         currentBid: null,
-
         winner: null,
 
-        currentPlayer: state.bidStarter,
+        currentPlayer: firstPlayer,
 
-        passed: [false,false,false,false],
-
-        activePlayers: [true,true,true,true],
-
+        passed: [false, false, false, false],
+        activePlayers: [true, true, true, true],
         passCount: 0,
-
-        hasBid: [false,false,false,false]
+        hasBid: [false, false, false, false]
 
     };
 
@@ -2734,15 +3132,26 @@ function checkBidFinish(){
 function makeBid(value){
 
     state.bid.currentBid = value;
-
     state.bid.winner = state.bid.currentPlayer;
-
     state.bid.hasBid[state.bid.currentPlayer] = true;
 
     // 13 denildiyse ihale hemen biter
     if (value === 13) {
         finishBid();
         return;
+    }
+
+    // ===== MECBURCU YOK =====
+    // Teklif verildiği anda diğer 3 oyuncu zaten PAS ise ihale biter
+    if (state.mandatoryRule === "none") {
+
+        const passCount =
+            state.bid.passed.filter(x => x).length;
+
+        if (passCount >= 3) {
+            finishBid();
+            return;
+        }
     }
 
     nextBidPlayer();
@@ -2754,10 +3163,62 @@ function makeBidPass(){
     const player = state.bid.currentPlayer;
 
     state.bid.hasBid[player] = true;
-
     state.bid.passed[player] = true;
 
-    if(state.bid.hasBid.every(x => x)){
+// ===== MECBURCU YOK =====
+if (state.mandatoryRule === "none") {
+
+    const passCount =
+        state.bid.passed.filter(x => x).length;
+
+    // Hiç teklif verilmeden 4 oyuncu da PAS dedi
+    if (
+        state.bid.currentBid === null &&
+        passCount >= 4
+    ) {
+        document
+            .getElementById("gameDialog")
+            .classList.add("hidden");
+
+        state.revealedSeat = null;
+
+        showToast("4 oyuncu da PAS dedi. Yeni el dağıtılıyor.");
+
+        dealNewHand();
+        return;
+    }
+
+    // Bir teklif varsa, 3 PAS ile ihale biter
+    if (
+        state.bid.currentBid !== null &&
+        passCount >= 3
+    ) {
+        finishBid();
+        return;
+    }
+
+    nextBidPlayer();
+    return;
+}
+
+    // ===== KOLTUK ALTINA KALIR =====
+    if (state.mandatoryRule === "underSeat") {
+
+        const passCount =
+            state.bid.passed.filter(x => x).length;
+
+        // 3 oyuncu PAS dediyse ihale biter
+        if (passCount >= 3) {
+            finishBid();
+            return;
+        }
+
+        nextBidPlayer();
+        return;
+    }
+
+    // ===== YAPANA KALIR - MEVCUT SİSTEM =====
+    if (state.bid.hasBid.every(x => x)) {
         finishBid();
         return;
     }
@@ -2887,7 +3348,13 @@ async function playDealAnimation(){
 
     let index = 0;
 
-    const rounds = [4,3,3,3];
+    const dealPatterns = {
+    "4-3-3-3": [4, 3, 3, 3],
+    "3-2-2-2-2-2": [3, 2, 2, 2, 2, 2],
+    "4-4-5": [4, 4, 5]
+};
+
+const rounds = dealPatterns[state.dealPattern] || [4, 3, 3, 3];
 
     // İlk elde rastgele dağıtıcı seç
     if(state.dealer == null){
@@ -3123,7 +3590,6 @@ function reallyStartGame(){
 }
 
 
-
 function startGame() {
 
     lockSeat(getPartner(state.bid.winner));
@@ -3134,11 +3600,15 @@ function startGame() {
 
     state.currentTurn = state.leader;
 
-    // Mecbur 7 kontrolü
-    if (
-        state.bid.forcedSeven &&
-        state.bid.currentBid === 7
-    ) {
+    // 7 ile alınan ihale için oynama kararı
+    const shouldAskForSeven =
+        state.bid.currentBid === 7 &&
+        (
+            state.bid.forcedSeven ||
+            state.mandatoryRule === "underSeat"
+        );
+
+    if (shouldAskForSeven) {
 
         renderForcedSevenDialog();
 
@@ -3147,7 +3617,6 @@ function startGame() {
 
     reallyStartGame();
 }
-
 
   
 function isLegalPlay(player, card) {
@@ -3642,9 +4111,48 @@ function finishClaim(){
 el("dealerInfo").textContent =
     "🂠 Dağıtan : " + getSeatLabel(state.currentDealer);
 
-el("mandatoryInfo").textContent =
-    "🗣 Mecburcu : " +
-    getSeatLabel(state.mandatoryPlayer);
+// ===== MECBURCU GÖSTERİMİ =====
+let displayedMandatory = state.mandatoryPlayer;
+
+// Mecburcu Yok
+if (state.mandatoryRule === "none") {
+
+    el("mandatoryInfo").textContent =
+        "🗣 Mecburcu : Yok";
+
+}
+// Koltuk Altına Kalır
+else if (
+    state.mandatoryRule === "underSeat" &&
+    state.currentDealer !== null
+) {
+
+    const nextSeat = {
+        0: 3, // Kuzey → Batı
+        3: 2, // Batı → Güney
+        2: 1, // Güney → Doğu
+        1: 0  // Doğu → Kuzey
+    };
+
+    displayedMandatory = nextSeat[state.currentDealer];
+
+    el("mandatoryInfo").textContent =
+        "🗣 Mecburcu : " +
+        getSeatLabel(displayedMandatory);
+
+}
+// Yapana Kalır
+else {
+
+    el("mandatoryInfo").textContent =
+        "🗣 Mecburcu : " +
+        (
+            displayedMandatory !== null &&
+            displayedMandatory !== undefined
+                ? getSeatLabel(displayedMandatory)
+                : "-"
+        );
+}
  
   }
 
@@ -3712,9 +4220,10 @@ handEl.ondrop = (e) => {
 ){
         for(let i=0;i<hand.length;i++){
             const back=document.createElement("div");
-           // kart rengini seç
-            back.className = "card-back blue";
-            //back.className = "card-back red";
+
+           // Ayarlardan seçilen kart arka yüzünü kullan
+            back.className = `card-back ${state.cardBackTheme}`;
+
             handEl.appendChild(back);
         }
         el(`count${playerIndex + 1}`).textContent = `${hand.length} kart`;
@@ -3860,50 +4369,6 @@ function renderTop() {
     ui.teamScoreB2.textContent = scoreB;
 }
 
-
-function renderChangelog() {
-
-    const panel = el("changelog");
-
-    panel.className = "changelog";
-
-    panel.innerHTML = `
-
-<div>
-
-<div class="changelog-version">
-Version : ${changelog.version}
-</div>
-
-<div class="changelog-status">
-Status : ${changelog.status}
-</div>
-
-</div>
-
-<div>
-
-<div class="changelog-title">
-✅ DONE
-</div>
-
-${changelog.done.map(item => `<div class="changelog-item">✔ ${item}</div>`).join("")}
-
-</div>
-
-<div>
-
-<div class="changelog-title">
-🚧 TODO
-</div>
-
-${changelog.todo.map(item => `<div class="changelog-item">□ ${item}</div>`).join("")}
-
-</div>
-
-`;
-
-}
 
 
 /* =======================================================
@@ -4146,6 +4611,145 @@ window.addEventListener("load", init);
     </div>
 
 </div>
+
+
+<!-- ===== AYARLAR PENCERESİ BAŞLANGIÇ ===== -->
+<div id="settingsModal" class="settings-modal hidden">
+
+    <div class="settings-box">
+
+        <h2>⚙️ Ayarlar</h2>
+
+
+        <!-- ===== KAÇTA BİTER BAŞLANGIÇ ===== -->
+        <div class="settings-section">
+
+            <label for="matchTargetSelect">
+                <strong>🏆 Kaçta Biter</strong>
+            </label>
+
+            <select id="matchTargetSelect">
+                <option value="11">11</option>
+                <option value="21">21</option>
+                <option value="41">41</option>
+                <option value="61">61</option>
+                <option value="custom">Özel</option>
+            </select>
+
+            <input
+                type="number"
+                id="customMatchTarget"
+                min="1"
+                placeholder="Özel puan"
+                class="hidden"
+            >
+
+        </div>
+        <!-- ===== KAÇTA BİTER BİTİŞ ===== -->
+
+
+        <!-- ===== KİM MECBURCU BAŞLANGIÇ ===== -->
+        <div class="settings-section">
+
+            <label for="mandatoryRuleSelect">
+                <strong>🗣 Mecburcu Kim</strong>
+            </label>
+
+            <select id="mandatoryRuleSelect">
+                <option value="maker">Yapana Kalır</option>
+                <option value="underSeat">Koltuk Altına Kalır</option>
+                <option value="none">Mecburcu Yok</option>
+            </select>
+
+        </div>
+        <!-- ===== KİM MECBURCU BİTİŞ ===== -->
+
+<!-- ===== DAĞITMA ŞEKLİ BAŞLANGIÇ ===== -->
+<div class="settings-section">
+
+    <label for="dealPatternSelect">
+        <strong>🂠 Dağıtma Şekli</strong>
+    </label>
+
+    <select id="dealPatternSelect">
+        <option value="4-3-3-3">4 - 3 - 3 - 3</option>
+        <option value="3-2-2-2-2-2">3 - 2 - 2 - 2 - 2 - 2</option>
+        <option value="4-4-5">4 - 4 - 5</option>
+    </select>
+
+</div>
+<!-- ===== DAĞITMA ŞEKLİ BİTİŞ ===== -->
+
+<!-- ===== KART ARKA YÜZÜ BAŞLANGIÇ ===== -->
+<div class="settings-section">
+
+    <label for="cardBackSelect">
+        <strong>🃏 Kart Rengi</strong>
+    </label>
+
+    <select id="cardBackSelect">
+        <option value="blue">Mavi</option>
+        <option value="red">Kırmızı</option>
+    </select>
+
+</div>
+<!-- ===== KART ARKA YÜZÜ BİTİŞ ===== -->
+
+
+<!-- ===== KAHVEHANE DİYALOGLARI BAŞLANGIÇ ===== -->
+<div class="settings-section">
+
+    <label for="dialogueSelect">
+        <strong>💬 Kahvehane Diyalogları</strong>
+    </label>
+
+    <select id="dialogueSelect">
+        <option value="on">Açık</option>
+        <option value="off">Kapalı</option>
+    </select>
+
+</div>
+<!-- ===== KAHVEHANE DİYALOGLARI BİTİŞ ===== -->
+
+
+<!-- ===== ANİMASYONLAR BAŞLANGIÇ ===== -->
+<div class="settings-section">
+
+    <label for="animationsSelect">
+        <strong>✨ Animasyonlar</strong>
+    </label>
+
+    <select id="animationsSelect">
+        <option value="on">Açık</option>
+        <option value="off">Kapalı</option>
+    </select>
+
+</div>
+<!-- ===== ANİMASYONLAR BİTİŞ ===== -->
+
+<!-- ===== SESLER BAŞLANGIÇ ===== -->
+<div class="settings-section">
+
+    <label for="soundsSelect">
+        <strong>🔊 Sesler</strong>
+    </label>
+
+    <select id="soundsSelect">
+        <option value="on">Açık</option>
+        <option value="off">Kapalı</option>
+    </select>
+
+</div>
+<!-- ===== SESLER BİTİŞ ===== -->
+
+
+        <button id="closeSettingsBtn">Kapat</button>
+
+    </div>
+
+</div>
+<!-- ===== AYARLAR PENCERESİ BİTİŞ ===== -->
+
 
 </body>
 </html>
