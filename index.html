@@ -143,6 +143,20 @@
     width: 100%;
 }
 
+#startMatchBtn{
+
+    background:#16a34a;
+    color:#fff;
+
+    font-weight:700;
+}
+
+#startMatchBtn:hover{
+
+    background:#22c55e;
+
+}
+
 
 /* =======================================================
    APP LAYOUT
@@ -210,18 +224,6 @@ input[type="text"] {
     font-size: 13px;
     outline: none;
 }
-
-
-#leaderSelect,
-#trumpSelect{
-    appearance: auto;
-    -webkit-appearance: auto;
-
-    background-color: #1b2235;
-    color: #f3f7ff;
-    border: 1px solid rgba(255,255,255,.15);
-}
-
 
 select option{
     background:#ffffff;
@@ -767,30 +769,6 @@ select option{
     margin-bottom: 4px;
 }
 
-.panel-field{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    margin-bottom:8px;
-}
-
-.panel-field select{
-    width:100%;
-}
-
-
-.panel-field label{
-    display:block;
-    margin-bottom:5px;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    color:#f5f5f5;
-
-    letter-spacing:.2px;
-}
 
 
 .saved-list{
@@ -1122,20 +1100,6 @@ transform:
 
 
 
-.contract-info{
-    margin-top:8px;
-    padding:8px 12px;
-    border-radius:10px;
-
-    text-align:center;
-    font-size:15px;
-    font-weight:750;
-
-    background:rgba(255,215,0,.12);
-    border:1px solid rgba(255,215,0,.35);
-
-    color:#ffd86b;
-}
 
 
 /* =======================================================
@@ -1303,16 +1267,6 @@ transform:
    DEVELOPMENT CONTROLS
 ======================================================= */
 
-.dev-controls{
-    display:flex;
-    gap:12px;
-    margin-top:12px;
-}
-
-.dev-controls select{
-    width:100%;
-}
-
 .status-left{
     display:flex;
     align-items:center;
@@ -1455,6 +1409,7 @@ transform:
 
     <div class="controls">
       <button id="settingsBtn">⚙️ Ayarlar</button>
+      <button id="startMatchBtn" class="success">🟢 Oyunu Başlat</button>
       <button id="showAllBtn">Tüm Eller Aç</button>
       <button class="primary" id="dealBtn">Yeni El Dağıt</button>
       <button id="bidStartBtn">İhale Başlat</button>
@@ -1472,10 +1427,13 @@ transform:
     <!-- ===== SOL PANEL BAŞLANGIÇ ===== -->
     <div class="left-panel">
 
-      <div id="dealInfo" class="deal-info">
-    <div id="dealerInfo">🂠 Dağıtan : -</div>
-    <div id="mandatoryInfo">🗣 Mecburcu : -</div>
-      </div>
+<div id="dealInfo" class="deal-info">
+    <div id="dealerInfo">Dağıtan : -</div>
+    <div id="mandatoryInfo">Mecburcu : -</div>
+
+    <div id="bidInfo">İhale: -</div>
+    <div id="trumpInfo">Koz: -</div>
+</div>
 
         <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
         <div class="score-board">
@@ -1646,37 +1604,6 @@ transform:
 
 <!-- ===== SAĞ PANEL BAŞLANGIÇ ===== -->
 <div class="right-panel">
-
-
-
-<!-- ===== İHALE BAŞLANGIÇ ===== -->
-    <div class="panel-box">
-        <h2>🏆 İhale</h2>
-
-        <div id="contractInfo" class="contract-info"></div>
-
-        <div class="dev-controls">
-
-            <div class="panel-field">
-                <label>İhaleyi Alan</label>
-                <select id="leaderSelect"></select>
-            </div>
-
-            <div class="panel-field">
-                <label>Koz</label>
-                <select id="trumpSelect">
-                    <option value="">Yok</option>
-                    <option value="S">Maça ♠</option>
-                    <option value="H">Kupa ♥</option>
-                    <option value="D">Karo ♦</option>
-                    <option value="C">Sinek ♣</option>
-                </select>
-            </div>
-
-        </div>
-
-    </div>
-<!-- ===== İHALE BİTİŞ ===== -->
 
 
 <!-- ===== EL DAĞITMA SEÇENEKLERİ BAŞLANGIÇ ===== -->
@@ -1909,8 +1836,6 @@ const state = {
     winnerText: el("winnerText"),
     savedList: el("savedList"),
     trickGrid: el("trickGrid"),
-    leaderSelect: el("leaderSelect"),
-    trumpSelect: el("trumpSelect"),
     toast: el("toast")
 };
 
@@ -1923,13 +1848,9 @@ const state = {
 
     loadAppData();
 
-    fillLeaderOptions();
-
     setupButtons();
 
     setupCollapsiblePanels();
-
-    syncControlsFromState();
 
     state.initialSnapshot = cloneState();
 
@@ -1994,14 +1915,8 @@ el("closeMatchBtn").addEventListener("click",()=>{
 
 
     el("newMatchBtn").addEventListener("click", startNewMatch);
-    showToast("Hazır. Yeni el dağıt.");
   }
 
-
-  function syncControlsFromState() {
-    ui.trumpSelect.value = state.selectedTrump || "";
-    ui.leaderSelect.value = String(state.leader);
-  }
 
 
 function setupCollapsiblePanels(){
@@ -2091,9 +2006,6 @@ window.MatchController = {
         state.match.autoMode = true;
         state.match.handNo = 1;
         state.match.status = "deal";
-
-        console.log("Maç başladı.");
-
         this.nextDeal();
 
     },
@@ -2101,9 +2013,6 @@ window.MatchController = {
 nextDeal() {
 
     state.match.status = "deal";
-
-    console.log("Yeni el dağıtılıyor...");
-
     dealNewHand();
 
 },
@@ -2111,9 +2020,6 @@ nextDeal() {
 onDealFinished() {
 
     state.match.status = "auction";
-
-    console.log("Dağıtım tamamlandı.");
-
     openBidModal();
 
 },
@@ -2122,9 +2028,6 @@ onDealFinished() {
 onAuctionFinished() {
 
     state.match.status = "trump";
-
-    console.log("İhale tamamlandı.");
-
     renderTrumpDialog();
 
 },
@@ -2132,9 +2035,6 @@ onAuctionFinished() {
 onTrumpSelected(){
 
     state.match.status = "playing";
-
-    console.log("Koz seçildi.");
-
     startGame();
 
 },
@@ -2166,6 +2066,12 @@ onHandFinished(){
 ======================================================= */
 
   function setupButtons() {
+
+el("startMatchBtn").addEventListener("click", () => {
+
+    MatchController.start();
+
+});
 
 const mandatoryRuleSelect =
     document.getElementById("mandatoryRuleSelect");
@@ -2336,10 +2242,6 @@ el("swapHandsBtn").addEventListener(
     el("bidStartBtn").addEventListener("click", openBidModal);
     el("startBtn").addEventListener("click", startGame);
 
-
-    ui.trumpSelect.addEventListener("change", onTrumpChange);
-    ui.leaderSelect.addEventListener("change", onLeaderChange);
-
   }
 
 
@@ -2348,20 +2250,7 @@ el("swapHandsBtn").addEventListener(
 ======================================================= */
 
 
-function onTrumpChange() {
-    state.selectedTrump = ui.trumpSelect.value || "";
-    renderTop();
-    saveAppData();
-  }
 
-  function onLeaderChange() {
-    state.leader = Number(ui.leaderSelect.value);
-    if (state.phase === "playing" && state.currentTrick.length === 0) {
-      state.currentTurn = state.leader;
-    }
-    renderTop();
-    saveAppData();
-  }
 
 
 /* =======================================================
@@ -3375,12 +3264,6 @@ function finishBid(){
         + `${bid} aldı.`
     );
 
-
-state.contractInfo =
-    getSeatLabel(winner)
-    + " aldı - "
-    + bid;
-
 showToast(
     getSeatLabel(winner)
     + " "
@@ -3391,6 +3274,10 @@ showToast(
 if(state.match.running){
 
     MatchController.onAuctionFinished();
+
+}else{
+
+    openTrumpDialog();
 
 }
 
@@ -3421,6 +3308,61 @@ function getPartner(player){
         2: 0,
         3: 1
     }[player];
+
+}
+
+
+function openTrumpDialog(){
+
+    document
+        .getElementById("gameDialog")
+        .classList.remove("hidden");
+
+    document.getElementById("mandatorySeven").textContent =
+        getSeatLabel(state.bid.winner) + " Koz Seçiyor";
+
+    document.getElementById("bidPlayerName").textContent =
+        "Lütfen koz seçin.";
+
+    const container =
+        document.getElementById("bidButtons");
+
+    container.innerHTML = "";
+
+const trumps = [
+    { value: "S", text: "♠ Maça" },
+    { value: "H", text: "♥ Kupa" },
+    { value: "D", text: "♦ Karo" },
+    { value: "C", text: "♣ Sinek" }
+];
+
+trumps.forEach(trump => {
+
+    const btn = document.createElement("button");
+
+    btn.className = "primary";
+
+    btn.textContent = trump.text;
+
+btn.onclick = () => {
+
+    state.selectedTrump = trump.value;
+
+    document
+        .getElementById("gameDialog")
+        .classList.add("hidden");
+
+    render();
+
+    showToast(
+        "Koz : " + trump.text
+    );
+
+};
+
+    container.appendChild(btn);
+
+});
 
 }
 
@@ -3724,15 +3666,23 @@ function reallyStartGame(){
 
 function startGame() {
 
+    // Önce koz seçilmiş mi?
+    if (!state.selectedTrump) {
+
+        showToast("Önce koz seçin.");
+
+        return;
+    }
+
+    // İhaleyi alan başlar
+    state.leader = state.bid.winner;
+
+    state.currentTurn = state.bid.winner;
+
+    // Ortağı aç
     lockSeat(getPartner(state.bid.winner));
 
-    state.selectedTrump = ui.trumpSelect.value || "";
-
-    state.leader = Number(ui.leaderSelect.value);
-
-    state.currentTurn = state.leader;
-
-    // 7 ile alınan ihale için oynama kararı
+    // Mecburi 7 kontrolü
     const shouldAskForSeven =
         state.bid.currentBid === 7 &&
         (
@@ -3748,6 +3698,7 @@ function startGame() {
     }
 
     reallyStartGame();
+
 }
 
   
@@ -4308,24 +4259,39 @@ function renderClaimButton() {
     slot.appendChild(button);
 }
 
+
+function trumpName(trump){
+
+    switch(trump){
+
+        case "S": return "Maça";
+        case "H": return "Kupa";
+        case "D": return "Karo";
+        case "C": return "Sinek";
+
+        default: return "-";
+    }
+
+}
+
+
 /* =======================================================
    RENDER SYSTEM
 ======================================================= */
   function render() {
-    syncControlsFromState();
+
     renderTop();
     for (let i = 0; i < 4; i++) renderHand(i);
     renderTrickGrid();
     renderSavedList();
     saveAppData();
-    el("contractInfo").textContent = state.contractInfo;
     el("scoreA").textContent = state.matchScore.A;
     el("scoreB").textContent = state.matchScore.B;
     el("targetScore").textContent = state.matchTarget;
     renderClaimButton();
 
 el("dealerInfo").textContent =
-    "🂠 Dağıtan : " + getSeatLabel(state.currentDealer);
+    "Dağıtan : " + getSeatLabel(state.currentDealer);
 
 // ===== MECBURCU GÖSTERİMİ =====
 let displayedMandatory = state.mandatoryPlayer;
@@ -4334,7 +4300,7 @@ let displayedMandatory = state.mandatoryPlayer;
 if (state.mandatoryRule === "none") {
 
     el("mandatoryInfo").textContent =
-        "🗣 Mecburcu : Yok";
+        "Mecburcu : Yok";
 
 }
 // Koltuk Altına Kalır
@@ -4353,7 +4319,7 @@ else if (
     displayedMandatory = nextSeat[state.currentDealer];
 
     el("mandatoryInfo").textContent =
-        "🗣 Mecburcu : " +
+        "Mecburcu : " +
         getSeatLabel(displayedMandatory);
 
 }
@@ -4361,7 +4327,7 @@ else if (
 else {
 
     el("mandatoryInfo").textContent =
-        "🗣 Mecburcu : " +
+        "Mecburcu : " +
         (
             displayedMandatory !== null &&
             displayedMandatory !== undefined
@@ -4369,6 +4335,26 @@ else {
                 : "-"
         );
 }
+
+
+el("bidInfo").textContent =
+    "İhale : " +
+    (
+        state.bid.winner == null
+            ? "-"
+            : getSeatLabel(state.bid.winner) +
+              " - " +
+              state.bid.currentBid +
+              " dedi"
+    );
+
+el("trumpInfo").textContent =
+    "Koz : " +
+    (
+        !state.selectedTrump
+            ? "-"
+            : trumpName(state.selectedTrump)
+    );
  
   }
 
@@ -4632,18 +4618,6 @@ function escapeHtml(str) {
 
 
 
-  function fillLeaderOptions() {
-    ui.leaderSelect.innerHTML = "";
-    for (let i = 0; i < 4; i++) {
-      const opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = PLAYER_POSITIONS[i];
-      ui.leaderSelect.appendChild(opt);
-    }
-  }
-
-
-
 
   function restoreFromLite(lite) {
     state.hands = lite.hands.map(h => h.map(c => ({...c})));
@@ -4660,7 +4634,7 @@ function escapeHtml(str) {
     state.phase = lite.phase;
     state.winnerOfLastTrick = lite.winnerOfLastTrick;
     state.scores = { ...lite.scores };
-    syncControlsFromState();
+
   }
 
 
@@ -4707,7 +4681,6 @@ function escapeHtml(str) {
     state.phase = snapshot.phase;
     state.winnerOfLastTrick = snapshot.winnerOfLastTrick;
     state.scores = { ...snapshot.scores };
-    syncControlsFromState();
     render();
   }
 
