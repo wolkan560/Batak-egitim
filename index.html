@@ -1822,6 +1822,16 @@ const el = (id) => document.getElementById(id);
 ======================================================= */
 const state = {
 
+   match: {
+
+    running: false,
+
+    autoMode: false,
+
+    status: "idle"
+
+    },
+
     mandatoryPlayer: null,
     currentDealer: null,
 
@@ -2069,8 +2079,86 @@ function unlockSeat(player){
 }
 
 
+/* =======================================================
+   Match Controller
+======================================================= */
+
+window.MatchController = {
+
+    start() {
+
+        state.match.running = true;
+        state.match.autoMode = true;
+        state.match.handNo = 1;
+        state.match.status = "deal";
+
+        console.log("Maç başladı.");
+
+        this.nextDeal();
+
+    },
+
+nextDeal() {
+
+    state.match.status = "deal";
+
+    console.log("Yeni el dağıtılıyor...");
+
+    dealNewHand();
+
+},
+
+onDealFinished() {
+
+    state.match.status = "auction";
+
+    console.log("Dağıtım tamamlandı.");
+
+    openBidModal();
+
+},
 
 
+onAuctionFinished() {
+
+    state.match.status = "trump";
+
+    console.log("İhale tamamlandı.");
+
+    renderTrumpDialog();
+
+},
+
+onTrumpSelected(){
+
+    state.match.status = "playing";
+
+    console.log("Koz seçildi.");
+
+    startGame();
+
+},
+
+onHandFinished(){
+
+    // Maç bittiyse dur
+    if(checkMatchWinner()){
+        return;
+    }
+
+    // 1.5 saniye sonra yeni ele geç
+    setTimeout(async()=>{
+
+        await dealNewHand();
+
+        openBidModal();
+
+    },1500);
+
+}
+
+
+};
 
 
 /* =======================================================
@@ -2509,7 +2597,7 @@ function checkMatchWinner(){
 
     // Henüz hedef puana ulaşan yok
     if(a < state.matchTarget && b < state.matchTarget){
-        return;
+     return false;
     }
 
     // İki takım da hedefi geçti
@@ -2520,9 +2608,10 @@ function checkMatchWinner(){
 
             showToast("🏆 Berabere! Uzatma eli oynanacak.");
 
-            state.extraDeal = true;
+state.extraDeal = true;
 
-            return;
+return false;
+
         }
 
         // Yüksek puan kazanır
@@ -2536,7 +2625,7 @@ function checkMatchWinner(){
 
         }
 
-        return;
+        return true;
     }
 
     // Sadece Kuzey-Güney hedefe ulaştı
@@ -2544,7 +2633,7 @@ function checkMatchWinner(){
 
         showMatchWinner("A");
 
-        return;
+        return true;
     }
 
     // Sadece Doğu-Batı hedefe ulaştı
@@ -2552,7 +2641,7 @@ function checkMatchWinner(){
 
         showMatchWinner("B");
 
-        return;
+        return true;
     }
 
 }
@@ -2849,6 +2938,69 @@ if (state.mandatoryRule === "none") {
    İhale Seçenekleri Bitiş
 ======================================================= */
 
+function renderTrumpDialog(){
+
+    document
+        .getElementById("gameDialog")
+        .classList.remove("hidden");
+
+    document.getElementById("mandatorySeven").textContent =
+        getSeatLabel(state.bid.winner) + " Koz Seçiyor";
+
+    document.getElementById("bidPlayerName").textContent =
+        "Lütfen kozu seçiniz.";
+
+    const container =
+    document.getElementById("bidButtons");
+
+container.innerHTML = "";
+
+const suits = [
+
+    { value: "S", text: "♠ Maça" },
+    { value: "H", text: "♥ Kupa" },
+    { value: "D", text: "♦ Karo" },
+    { value: "C", text: "♣ Sinek" }
+
+];
+
+suits.forEach(suit => {
+
+    const btn = document.createElement("button");
+
+    btn.textContent = suit.text;
+
+    btn.onclick = () => {
+
+        selectTrump(suit.value);
+
+    };
+
+    container.appendChild(btn);
+
+});
+
+
+}
+
+function selectTrump(trump){
+
+    state.selectedTrump = trump;
+
+    state.leader = state.bid.winner;
+
+    state.currentTurn = state.bid.winner;
+
+    document
+        .getElementById("gameDialog")
+        .classList.add("hidden");
+
+    render();
+
+    MatchController.onTrumpSelected();
+
+}
+
 
 
 function renderForcedSevenDialog(){
@@ -2906,24 +3058,13 @@ noBtn.onclick = ()=>{
         .getElementById("gameDialog")
         .classList.add("hidden");
 
-    // İhaleyi alan takım
-    const bidderTeam =
-        state.bid.winner % 2 === 0 ? "A" : "B";
+showToast(
+    getSeatLabel(state.bid.winner) +
+    " kağıdı attı."
+);
 
-    // Rakip takım
-    const opponentTeam =
-        bidderTeam === "A" ? "B" : "A";
+finishForcedSevenRefuse();
 
-    // Maç puanı
-    state.matchScore[bidderTeam] -= 7;
-    state.matchScore[opponentTeam] += 7;
-
-    render();
-
-    showToast(
-        getSeatLabel(state.bid.winner) +
-        " kağıdı attı."
-    );
 
  //   setTimeout(() => {
 
@@ -2937,6 +3078,7 @@ noBtn.onclick = ()=>{
 
 container.appendChild(noBtn);
 }
+
 
 
 
@@ -3029,6 +3171,15 @@ function resetBid(){
         true
     ];
 
+    state.bid.bids = [
+        null,
+        null,
+        null,
+        null
+    ];
+
+state.bid.bidHistory = [];
+
 }
 
 
@@ -3051,19 +3202,23 @@ function resetBidState(){
         firstPlayer = nextSeat[state.currentDealer];
     }
 
-    state.bid = {
+state.bid = {
 
-        currentBid: null,
-        winner: null,
+    currentBid: null,
+    winner: null,
 
-        currentPlayer: firstPlayer,
+    currentPlayer: state.bidStarter,
 
-        passed: [false, false, false, false],
-        activePlayers: [true, true, true, true],
-        passCount: 0,
-        hasBid: [false, false, false, false]
+    passed: [false, false, false, false],
+    activePlayers: [true, true, true, true],
+    passCount: 0,
+    hasBid: [false, false, false, false],
 
-    };
+    bids: [null, null, null, null],
+
+    bidHistory: []
+
+};
 
 }
 
@@ -3098,23 +3253,18 @@ function makeBid(value){
     state.bid.winner = state.bid.currentPlayer;
     state.bid.hasBid[state.bid.currentPlayer] = true;
 
+    state.bid.bids[state.bid.currentPlayer] = value;
+
+    // İhale geçmişine ekle
+    state.bid.bidHistory.push({
+        player: state.bid.currentPlayer,
+        value: value
+    });
+
     // 13 denildiyse ihale hemen biter
     if (value === 13) {
         finishBid();
         return;
-    }
-
-    // ===== MECBURCU YOK =====
-    // Teklif verildiği anda diğer 3 oyuncu zaten PAS ise ihale biter
-    if (state.mandatoryRule === "none") {
-
-        const passCount =
-            state.bid.passed.filter(x => x).length;
-
-        if (passCount >= 3) {
-            finishBid();
-            return;
-        }
     }
 
     nextBidPlayer();
@@ -3127,6 +3277,13 @@ function makeBidPass(){
 
     state.bid.hasBid[player] = true;
     state.bid.passed[player] = true;
+    state.bid.bids[player] = "PASS";
+
+    state.bid.bidHistory.push({
+    player: player,
+    value: "PASS"
+});
+
 
 // ===== MECBURCU YOK =====
 if (state.mandatoryRule === "none") {
@@ -3224,14 +3381,20 @@ state.contractInfo =
     + " aldı - "
     + bid;
 
-    showToast(
-        getSeatLabel(winner)
-        + " "
-        + bid
-        + " aldı."
-    );
+showToast(
+    getSeatLabel(winner)
+    + " "
+    + bid
+    + " aldı."
+);
 
-    render();
+if(state.match.running){
+
+    MatchController.onAuctionFinished();
+
+}
+
+render();
 }
 
 
@@ -3289,6 +3452,12 @@ function getPartner(player){
     );
 
     saveCurrentSnapshot(snapshot, false);
+
+if(state.match.running){
+
+    MatchController.onDealFinished();
+
+}
 
     render();
 }
@@ -3706,21 +3875,24 @@ function playCard(player, cardId) {
         card: { ...card }
     });
 
+    if (state.currentTrick.length < 4) {
+
     state.currentTurn = (player + 3) % 4;
+
+}
 
     addHistory(
         `${PLAYER_POSITIONS[player]} oynadı: ${cardLabel(card)}.`
     );
 
     // Dördüncü kart atıldıysa
-    if (state.currentTrick.length === 4) {
+if (state.currentTrick.length === 4) {
 
-        // Son kart da görünsün
-        render();
-    
-          state.trickAnimating = true;
+    state.trickAnimating = true;
 
-        setTimeout(() => {
+    render();
+
+    setTimeout(() => {
 
             const winner = determineTrickWinner(
                 state.currentTrick,
@@ -3794,7 +3966,46 @@ function finishDeal(){
 
     render();
 
+    if(state.match.running){
+
+        MatchController.onHandFinished();
+
+    }
+
 }
+
+
+function finishForcedSevenRefuse(){
+
+    // İhaleyi alan takım
+    const bidderTeam =
+        TEAM_OF(state.bid.winner);
+
+    // Rakip takım
+    const opponentTeam =
+        bidderTeam === "A"
+            ? "B"
+            : "A";
+
+    // Puan
+    state.matchScore[bidderTeam] -= 7;
+    state.matchScore[opponentTeam] += 7;
+
+    addHistory(
+        getSeatLabel(state.bid.winner) +
+        " mecburi 7'yi oynamadı."
+    );
+
+    render();
+
+    if(state.match.running){
+
+        MatchController.onHandFinished();
+
+    }
+
+}
+
 
 
   function determineTrickWinner(trick, trump) {
