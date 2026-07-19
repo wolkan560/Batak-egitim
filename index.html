@@ -262,7 +262,35 @@ select option{
     min-height:0;
 }
 
+.table-dialog{
 
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:20;
+
+    pointer-events:none;
+
+}
+
+.table-dialog.hidden{
+
+    display:none;
+
+}
+
+.table-dialog .dialog-box{
+
+    pointer-events:auto;
+
+}
 
 /* =======================================================
    SIDEPANEL
@@ -920,6 +948,64 @@ select option{
     color:#8be98b;
 }
 
+.score-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:8px;
+
+    font-size:13px;
+
+    table-layout:fixed;
+
+}
+
+.score-table thead{
+
+    border-bottom:1px solid rgba(255,255,255,.35);
+
+}
+
+.score-table th{
+
+    padding:4px 2px;
+
+    text-align:center;
+
+    font-weight:600;
+
+}
+
+.score-table th:first-child{
+
+    width:28px;
+
+}
+
+.score-table td{
+
+    padding:4px 2px;
+
+    text-align:center;
+
+}
+
+.score-table tbody tr{
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.score-table tbody tr:hover{
+
+    background:rgba(255,255,255,.08);
+
+    cursor:pointer;
+
+}
+
 /* =======================================================
    TOAST
 ======================================================= */
@@ -1435,29 +1521,35 @@ transform:
     <div id="trumpInfo">Koz: -</div>
 </div>
 
-        <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
-        <div class="score-board">
+       <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
+<div class="score-board">
 
-            <div class="score-title">
-                SKOR TABLOSU
-            </div>
+    <div class="score-target">
+        <span id="targetScore"></span>'de Biter
+    </div>
 
-            <div class="score-row">
-                <span>Kuzey - Güney</span>
-                <span id="scoreA">0</span>
-            </div>
+    <table class="score-table">
 
-            <div class="score-row">
-                <span>Doğu - Batı</span>
-                <span id="scoreB">0</span>
-            </div>
+        <thead>
 
-            <div class="score-target">
-                <span id="targetScore"></span>'de Biter.
-            </div>
+            <tr>
 
-        </div>
-        <!-- ===== SKOR TABLOSU BİTİŞ ===== -->
+                <th></th>
+                <th>K-G</th>
+                <th>D-B</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="scoreTableBody">
+
+        </tbody>
+
+    </table>
+
+</div>
+<!-- ===== SKOR TABLOSU BİTİŞ ===== -->
 
 
     <div class="panel-box">
@@ -1551,11 +1643,23 @@ transform:
 </div>
           </div>
 
-         <div class="played-area">
+<div class="played-area">
 
-  <div class="trick-grid" id="trickGrid"></div>
+    <div class="trick-grid" id="trickGrid"></div>
 
-  <!-- İHALE PANELİ BURADA -->
+    <div id="tableDialog" class="table-dialog hidden">
+
+        <div class="dialog-box">
+
+            <div class="dialog-title" id="tableDialogTitle"></div>
+
+            <div class="dialog-player" id="tableDialogPlayer"></div>
+
+            <div class="dialog-buttons" id="tableDialogButtons"></div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -1915,6 +2019,7 @@ el("closeMatchBtn").addEventListener("click",()=>{
 
 
     el("newMatchBtn").addEventListener("click", startNewMatch);
+
   }
 
 
@@ -2045,6 +2150,9 @@ onHandFinished(){
     if(checkMatchWinner()){
         return;
     }
+
+    // Bir sonraki el numarası
+    state.match.handNo++;
 
     // 1.5 saniye sonra yeni ele geç
     setTimeout(async()=>{
@@ -2269,7 +2377,9 @@ el("swapHandsBtn").addEventListener(
       name: name.trim() || `El ${state.dealNo}`,
       createdAt: Date.now(),
       dealNo: state.dealNo,
-      snapshot: cloneState()
+      snapshot: JSON.parse(
+    JSON.stringify(state.initialSnapshot)
+)
     };
     state.savedHands.push(item);
     saveAppData();
@@ -2375,6 +2485,35 @@ if (
 }
 
 
+/* =======================================================
+   SHOW TABLE DİALOG
+======================================================= */
+
+function showTableDialog(title, player, buttonsHtml){
+
+    document.getElementById("tableDialogTitle").textContent = title;
+
+    document.getElementById("tableDialogPlayer").textContent = player;
+
+    document.getElementById("tableDialogButtons").innerHTML = buttonsHtml;
+
+    document.getElementById("tableDialog")
+        .classList.remove("hidden");
+
+}
+
+function hideTableDialog(){
+
+    document.getElementById("tableDialog")
+        .classList.add("hidden");
+
+}
+
+function setTableDialogButtons(html){
+
+    document.getElementById("tableDialogButtons").innerHTML = html;
+
+}
 
 /* =======================================================
    MATCH SYSTEM
@@ -2586,6 +2725,7 @@ function startNewMatch(){
    AUCTION SYSTEM
 ======================================================= */
 
+
 function openBidModal(){
 
     const allHandsReady =
@@ -2604,9 +2744,12 @@ function openBidModal(){
 
     render();
 
-    document
-        .getElementById("gameDialog")
-        .classList.remove("hidden");
+// document
+//     .getElementById("gameDialog")
+//     .classList.remove("hidden");
+
+showTableDialog("", "", "");
+renderBidOptions();
 
     renderBidOptions();
 }
@@ -2623,8 +2766,8 @@ function renderBidOptions(){
 
     const player = state.bid.currentPlayer;
 
-    const container =
-        document.getElementById("bidButtons");
+const container =
+    document.getElementById("tableDialogButtons");
 
     container.innerHTML = "";
 
@@ -2636,7 +2779,7 @@ if (state.mandatoryRule === "none") {
 
     if (state.bid.currentBid !== null) {
 
-        document.getElementById("mandatorySeven").textContent =
+        document.getElementById("tableDialogTitle").textContent =
             getSeatLabel(state.bid.winner) +
             " " +
             state.bid.currentBid +
@@ -2644,11 +2787,11 @@ if (state.mandatoryRule === "none") {
 
     } else {
 
-        document.getElementById("mandatorySeven").textContent =
+        document.getElementById("tableDialogTitle").textContent =
             "Mecburcu yok";
     }
 
-    document.getElementById("bidPlayerName").textContent =
+    document.getElementById("tableDialogPlayer").textContent =
         getSeatLabel(player) + " teklif seç";
 
 
@@ -2692,7 +2835,7 @@ if (state.mandatoryRule === "none") {
 
         if (state.bid.currentBid !== null) {
 
-            document.getElementById("mandatorySeven").textContent =
+            document.getElementById("tableDialogTitle").textContent =
                 getSeatLabel(state.bid.winner) +
                 " " +
                 state.bid.currentBid +
@@ -2700,12 +2843,12 @@ if (state.mandatoryRule === "none") {
 
         } else {
 
-            document.getElementById("mandatorySeven").textContent =
+            document.getElementById("tableDialogTitle").textContent =
                 getSeatLabel(player) +
                 " mecburcu";
         }
 
-        document.getElementById("bidPlayerName").textContent =
+        document.getElementById("tableDialogPlayer").textContent =
             getSeatLabel(player) + " teklif seç";
 
 
@@ -2756,7 +2899,7 @@ if (state.mandatoryRule === "none") {
 
     if(state.bid.currentBid){
 
-        document.getElementById("mandatorySeven").textContent =
+        document.getElementById("tableDialogTitle").textContent =
             getSeatLabel(state.bid.winner) +
             " " +
             state.bid.currentBid +
@@ -2767,12 +2910,12 @@ if (state.mandatoryRule === "none") {
         const mandatory =
             getMandatorySevenPlayer(state.bidStarter);
 
-        document.getElementById("mandatorySeven").textContent =
+       document.getElementById("tableDialogTitle").textContent =
             getSeatLabel(mandatory) +
             " mecbur 7'ci";
     }
 
-    document.getElementById("bidPlayerName").textContent =
+    document.getElementById("tableDialogPlayer").textContent =
         getSeatLabel(player) + " teklif seç";
 
 
@@ -2823,52 +2966,53 @@ if (state.mandatoryRule === "none") {
     }
 }
 
+
+
+
+
 /* =======================================================
    İhale Seçenekleri Bitiş
 ======================================================= */
 
 function renderTrumpDialog(){
 
-    document
-        .getElementById("gameDialog")
-        .classList.remove("hidden");
-
-    document.getElementById("mandatorySeven").textContent =
-        getSeatLabel(state.bid.winner) + " Koz Seçiyor";
-
-    document.getElementById("bidPlayerName").textContent =
-        "Lütfen kozu seçiniz.";
+    showTableDialog(
+        getSeatLabel(state.bid.winner) + " Koz Seçiyor",
+        "Lütfen kozu seçiniz.",
+        ""
+    );
 
     const container =
-    document.getElementById("bidButtons");
+        document.getElementById("tableDialogButtons");
 
-container.innerHTML = "";
+    container.innerHTML = "";
 
-const suits = [
+    const suits = [
 
-    { value: "S", text: "♠ Maça" },
-    { value: "H", text: "♥ Kupa" },
-    { value: "D", text: "♦ Karo" },
-    { value: "C", text: "♣ Sinek" }
+        { value: "S", text: "♠ Maça" },
+        { value: "H", text: "♥ Kupa" },
+        { value: "D", text: "♦ Karo" },
+        { value: "C", text: "♣ Sinek" }
 
-];
+    ];
 
-suits.forEach(suit => {
+    suits.forEach(suit => {
 
-    const btn = document.createElement("button");
+        const btn = document.createElement("button");
 
-    btn.textContent = suit.text;
+        btn.className = "primary";
 
-    btn.onclick = () => {
+        btn.textContent = suit.text;
 
-        selectTrump(suit.value);
+        btn.onclick = () => {
 
-    };
+            selectTrump(suit.value);
 
-    container.appendChild(btn);
+        };
 
-});
+        container.appendChild(btn);
 
+    });
 
 }
 
@@ -2880,9 +3024,7 @@ function selectTrump(trump){
 
     state.currentTurn = state.bid.winner;
 
-    document
-        .getElementById("gameDialog")
-        .classList.add("hidden");
+    hideTableDialog();
 
     render();
 
@@ -2891,84 +3033,59 @@ function selectTrump(trump){
 }
 
 
-
 function renderForcedSevenDialog(){
 
-    document
-        .getElementById("gameDialog")
-        .classList.remove("hidden");
-
-    document.getElementById("mandatorySeven").textContent =
-    getSeatLabel(state.bid.winner) + " Karar Veriyor";
-
-    document.getElementById("bidPlayerName").textContent =
-        "Bu eli oynamak istiyor musunuz?";
+    showTableDialog(
+        getSeatLabel(state.bid.winner) + " Karar Veriyor",
+        "Bu eli oynamak istiyor musunuz?",
+        ""
+    );
 
     const container =
-        document.getElementById("bidButtons");
+        document.getElementById("tableDialogButtons");
 
     container.innerHTML = "";
 
-// EVET
-const yesBtn =
-    document.createElement("button");
+    // EVET
+    const yesBtn = document.createElement("button");
 
-yesBtn.className = "primary";
+    yesBtn.className = "primary";
+    yesBtn.textContent = "Evet";
 
-yesBtn.textContent = "Evet";
+    yesBtn.onclick = ()=>{
 
-yesBtn.onclick = ()=>{
+        hideTableDialog();
 
-    document
-        .getElementById("gameDialog")
-        .classList.add("hidden");
+        state.bid.forcedSeven = false;
 
-    // Karar verildi
-    state.bid.forcedSeven = false;
+        reallyStartGame();
 
-    // Oyunu başlat
-    reallyStartGame();
-};
+    };
 
-container.appendChild(yesBtn);
+    container.appendChild(yesBtn);
 
+    // HAYIR
+    const noBtn = document.createElement("button");
 
-// HAYIR
-const noBtn =
-    document.createElement("button");
+    noBtn.className = "danger";
+    noBtn.textContent = "Hayır";
 
-noBtn.className = "danger";
+    noBtn.onclick = ()=>{
 
-noBtn.textContent = "Hayır";
+        hideTableDialog();
 
-noBtn.onclick = ()=>{
+        showToast(
+            getSeatLabel(state.bid.winner) +
+            " kağıdı attı."
+        );
 
-    document
-        .getElementById("gameDialog")
-        .classList.add("hidden");
+        finishForcedSevenRefuse();
 
-showToast(
-    getSeatLabel(state.bid.winner) +
-    " kağıdı attı."
-);
+    };
 
-finishForcedSevenRefuse();
+    container.appendChild(noBtn);
 
-
- //   setTimeout(() => {
-
-   //     dealNewHand();
-
-     //   openBidModal();
-
-//    }, 1800);
-
- };
-
-container.appendChild(noBtn);
 }
-
-
 
 
 function nextBidPlayer(){
@@ -3035,8 +3152,6 @@ if (state.mandatoryRule === "none") {
     render();
     renderBidOptions();
 }
-
-
 
 function resetBid(){
 
@@ -3185,9 +3300,7 @@ if (state.mandatoryRule === "none") {
         state.bid.currentBid === null &&
         passCount >= 4
     ) {
-        document
-            .getElementById("gameDialog")
-            .classList.add("hidden");
+        hideTableDialog();
 
         state.revealedSeat = null;
 
@@ -3242,9 +3355,7 @@ function finishBid(){
 
     state.revealedSeat = null;
 
-    document
-    .getElementById("gameDialog")
-    .classList.add("hidden");
+    hideTableDialog();
 
     const winner =
         state.bid.winner;
@@ -3314,55 +3425,64 @@ function getPartner(player){
 
 function openTrumpDialog(){
 
-    document
-        .getElementById("gameDialog")
-        .classList.remove("hidden");
-
-    document.getElementById("mandatorySeven").textContent =
-        getSeatLabel(state.bid.winner) + " Koz Seçiyor";
-
-    document.getElementById("bidPlayerName").textContent =
-        "Lütfen koz seçin.";
+    showTableDialog(
+        getSeatLabel(state.bid.winner) + " Koz Seçiyor",
+        "Lütfen koz seçin.",
+        ""
+    );
 
     const container =
-        document.getElementById("bidButtons");
+        document.getElementById("tableDialogButtons");
 
     container.innerHTML = "";
 
-const trumps = [
-    { value: "S", text: "♠ Maça" },
-    { value: "H", text: "♥ Kupa" },
-    { value: "D", text: "♦ Karo" },
-    { value: "C", text: "♣ Sinek" }
-];
+    const trumps = [
+        { value: "S", text: "♠ Maça" },
+        { value: "H", text: "♥ Kupa" },
+        { value: "D", text: "♦ Karo" },
+        { value: "C", text: "♣ Sinek" }
+    ];
 
-trumps.forEach(trump => {
+    trumps.forEach(trump => {
 
-    const btn = document.createElement("button");
+        const btn = document.createElement("button");
 
-    btn.className = "primary";
+        btn.className = "primary";
+        btn.textContent = trump.text;
 
-    btn.textContent = trump.text;
+        btn.onclick = () => {
 
-btn.onclick = () => {
+            state.selectedTrump = trump.value;
 
-    state.selectedTrump = trump.value;
+            // Mecburi 7 ise panel kapanmadan sonraki ekrana geç
+            const shouldAskForSeven =
+                state.bid.currentBid === 7 &&
+                (
+                    state.bid.forcedSeven ||
+                    state.mandatoryRule === "underSeat"
+                );
 
-    document
-        .getElementById("gameDialog")
-        .classList.add("hidden");
+            if (shouldAskForSeven) {
 
-    render();
+                renderForcedSevenDialog();
 
-    showToast(
-        "Koz : " + trump.text
-    );
+            } else {
 
-};
+                hideTableDialog();
 
-    container.appendChild(btn);
+            }
 
-});
+            render();
+
+            showToast(
+                "Koz : " + trump.text
+            );
+
+        };
+
+        container.appendChild(btn);
+
+    });
 
 }
 
@@ -3909,6 +4029,8 @@ function finishDeal(){
 
     calculateMatchScore();
 
+    addScoreTableRow();
+
     checkMatchWinner();
 
     state.phase = "finished";
@@ -4022,18 +4144,14 @@ function undo() {
 
 function openClaimDialog(){
 
-    document
-        .getElementById("gameDialog")
-        .classList.remove("hidden");
+showTableDialog(
+    "CLAIM",
+    "Teklifinizi seçin",
+    ""
+);
 
-    document.getElementById("mandatorySeven").textContent =
-        "CLAIM";
-
-    document.getElementById("bidPlayerName").textContent =
-        "Teklifinizi seçin";
-
-    const container =
-        document.getElementById("bidButtons");
+const container =
+    document.getElementById("tableDialogButtons");
 
     container.innerHTML = "";
 
@@ -4066,9 +4184,7 @@ for(let give = 1; give <= Math.min(3, remaining); give++){
 
     cancel.onclick = ()=>{
 
-        document
-            .getElementById("gameDialog")
-            .classList.add("hidden");
+        hideTableDialog();
 
     };
 
@@ -4085,13 +4201,11 @@ function createClaimButton(container,give,text){
 
     btn.textContent = text;
 
-   btn.onclick = ()=>{
+    btn.onclick = ()=>{
 
     state.claimOffer = give;
 
-    document
-        .getElementById("gameDialog")
-        .classList.add("hidden");
+    hideTableDialog();
 
     openClaimAnswerDialog();
 
@@ -4101,14 +4215,9 @@ function createClaimButton(container,give,text){
 
 }
 
+
+
 function openClaimAnswerDialog(){
-
-    document
-        .getElementById("gameDialog")
-        .classList.remove("hidden");
-
-    document.getElementById("mandatorySeven").textContent =
-        getSeatLabel(state.bid.winner) + " Claim Yaptı";
 
     const texts = [
         "Kalan elleri alıyorum.",
@@ -4117,51 +4226,46 @@ function openClaimAnswerDialog(){
         "Size 3 el bırakıyorum."
     ];
 
-    document.getElementById("bidPlayerName").textContent =
-        texts[state.claimOffer];
+    showTableDialog(
+        getSeatLabel(state.bid.winner) + " Claim Yaptı",
+        texts[state.claimOffer],
+        ""
+    );
 
     const container =
-        document.getElementById("bidButtons");
+        document.getElementById("tableDialogButtons");
 
     container.innerHTML = "";
 
     // EVET
-    const yesBtn =
-        document.createElement("button");
+    const yesBtn = document.createElement("button");
 
     yesBtn.className = "primary";
-
     yesBtn.textContent = "Evet";
 
     yesBtn.onclick = ()=>{
 
         state.claimUsed = true;
 
-document
-    .getElementById("gameDialog")
-    .classList.add("hidden");
+        hideTableDialog();
 
-finishClaim();
+        finishClaim();
 
     };
 
     container.appendChild(yesBtn);
 
     // HAYIR
-    const noBtn =
-        document.createElement("button");
+    const noBtn = document.createElement("button");
 
     noBtn.className = "danger";
-
     noBtn.textContent = "Hayır";
 
     noBtn.onclick = ()=>{
 
         state.claimUsed = true;
 
-        document
-            .getElementById("gameDialog")
-            .classList.add("hidden");
+        hideTableDialog();
 
         showToast("Claim reddedildi.");
 
@@ -4285,8 +4389,6 @@ function trumpName(trump){
     renderTrickGrid();
     renderSavedList();
     saveAppData();
-    el("scoreA").textContent = state.matchScore.A;
-    el("scoreB").textContent = state.matchScore.B;
     el("targetScore").textContent = state.matchTarget;
     renderClaimButton();
 
@@ -4578,6 +4680,27 @@ function renderTop() {
 /* =======================================================
    UTILITY FUNCTIONS
 ======================================================= */
+
+function addScoreTableRow(){
+
+    const tbody =
+        document.getElementById("scoreTableBody");
+
+    const tr =
+        document.createElement("tr");
+
+    // İleride tekrar oynatma için
+    tr.dataset.handNo = state.match.handNo;
+
+    tr.innerHTML = `
+        <td>${state.match.handNo}</td>
+        <td>${state.matchScore.A}</td>
+        <td>${state.matchScore.B}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+}
 
 function showToast(text) {
     ui.toast.textContent = text;
