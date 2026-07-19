@@ -1125,19 +1125,6 @@ transform:
 }
 
 
-#gameDialog{
-    position:fixed;
-    left:50%;
-    top:50%;
-    transform:translate(calc(-50% - 30px), calc(-50% + 30px));
-    z-index:9999;
-}
-
-#gameDialog.hidden{
-    display:none;
-}
-
-
 .dialog-title{
     text-align:center;
     font-size:16px;
@@ -1714,8 +1701,8 @@ transform:
 <div class="panel-box">
 
     <h2 class="collapse-title" id="dealOptionsToggle">
-        ▼ El Dağıtma Seçenekleri
-    </h2>
+    ▶ El Dağıtma Seçenekleri
+</h2>
 
     <div id="dealOptionsContent">
 
@@ -1798,29 +1785,6 @@ transform:
 
 </div>
 <!-- ===== KAYDEDİLEN ELLER BİTİŞ ===== -->
-
-
-
-
-
-
-<!-- ===== OYUN İÇİ DİYALOG BAŞLANGIÇ ===== -->
-<div id="gameDialog" class="game-dialog hidden">
-
-    <div class="dialog-box">
-
-        <div class="dialog-title" id="mandatorySeven"></div>
-
-        <div class="dialog-player" id="bidPlayerName">
-            Batı teklif seç
-        </div>
-
-        <div class="dialog-buttons" id="bidButtons"></div>
-
-    </div>
-
-</div>
-<!-- ===== OYUN İÇİ DİYALOG BİTİŞ ===== -->
 
 <div class="toast" id="toast"></div>
 
@@ -2034,11 +1998,11 @@ function setupCollapsiblePanels(){
     const dealContent =
         document.getElementById("dealOptionsContent");
 
-    // Varsayılan açık
-    dealContent.classList.add("open");
+    // Varsayılan kapalı
+    dealContent.classList.remove("open");
 
     dealToggle.textContent =
-        "▼ El Dağıtma Seçenekleri";
+        "▶ El Dağıtma Seçenekleri";
 
     dealToggle.addEventListener("click",()=>{
 
@@ -2329,12 +2293,12 @@ el("swapHandsBtn").addEventListener(
     el("dealBtn").addEventListener("click", () => {
 
           // İhale açıksa yeni el dağıtılamaz
-    if (!el("gameDialog").classList.contains("hidden")) {
+if (!el("tableDialog").classList.contains("hidden")) {
 
-        showToast("⚠ Önce ihaleyi tamamlayın.");
+    showToast("⚠ Önce ihaleyi tamamlayın.");
 
-        return;
-    }
+    return;
+}
       if (state.phase === "playing" && state.currentTrick.length && !confirm("Yeni el dağıtılsın mı? Mevcut tur silinecek.")) return;
       dealNewHand();
     });
@@ -2744,12 +2708,7 @@ function openBidModal(){
 
     render();
 
-// document
-//     .getElementById("gameDialog")
-//     .classList.remove("hidden");
-
-showTableDialog("", "", "");
-renderBidOptions();
+    showTableDialog("", "", "");
 
     renderBidOptions();
 }
@@ -2897,23 +2856,24 @@ if (state.mandatoryRule === "none") {
     // YAPANA KALIR - MEVCUT SİSTEM
     // ==================================================
 
-    if(state.bid.currentBid){
+let title = "";
 
-        document.getElementById("tableDialogTitle").textContent =
-            getSeatLabel(state.bid.winner) +
-            " " +
-            state.bid.currentBid +
-            " dedi";
+if (state.bid.currentBid) {
 
-    }else{
+    title =
+        getSeatLabel(state.bid.winner) +
+        " " +
+        state.bid.currentBid +
+        " dedi";
 
-        const mandatory =
-            getMandatorySevenPlayer(state.bidStarter);
+} else {
 
-       document.getElementById("tableDialogTitle").textContent =
-            getSeatLabel(mandatory) +
-            " mecbur 7'ci";
-    }
+    title =
+        getSeatLabel(getMandatorySevenPlayer(state.bidStarter)) +
+        " mecbur 7'ci";
+}
+
+el("tableDialogTitle").textContent = title;
 
     document.getElementById("tableDialogPlayer").textContent =
         getSeatLabel(player) + " teklif seç";
