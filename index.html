@@ -1816,15 +1816,27 @@ function unlockSeat(player){
 
 window.MatchController = {
 
-    start() {
+start() {
 
-        state.match.running = true;
-        state.match.autoMode = true;
-        state.match.handNo = 1;
-        state.match.status = "deal";
-        this.nextDeal();
+    state.match.running = true;
+    state.match.autoMode = true;
 
-    },
+    state.match.handNo = 1;
+
+    state.matchScore.A = 0;
+    state.matchScore.B = 0;
+
+    state.scores.A = 0;
+    state.scores.B = 0;
+
+    document.getElementById("scoreTableBody").innerHTML = "";
+
+    render();
+
+    state.match.status = "deal";
+    this.nextDeal();
+
+},
 
 nextDeal() {
 
@@ -4398,6 +4410,10 @@ function renderTop() {
 
 function addScoreTableRow(){
 
+const handNo = state.match.running
+    ? state.match.handNo
+    : state.dealNo;
+
     const tbody =
         document.getElementById("scoreTableBody");
 
@@ -4407,11 +4423,11 @@ function addScoreTableRow(){
     // İleride tekrar oynatma için
     tr.dataset.handNo = state.match.handNo;
 
-    tr.innerHTML = `
-        <td>${state.match.handNo}</td>
-        <td>${state.matchScore.A}</td>
-        <td>${state.matchScore.B}</td>
-    `;
+tr.innerHTML = `
+    <td>${handNo}</td>
+    <td>${state.matchScore.A}</td>
+    <td>${state.matchScore.B}</td>
+`;
 
     tbody.appendChild(tr);
 
@@ -4771,14 +4787,12 @@ window.addEventListener("load", init);
 </div>
 <!-- ===== SESLER BİTİŞ ===== -->
 
-
         <button id="closeSettingsBtn">Kapat</button>
 
     </div>
 
 </div>
 <!-- ===== AYARLAR PENCERESİ BİTİŞ ===== -->
-
 
 </body>
 </html>
