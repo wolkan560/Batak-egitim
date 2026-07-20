@@ -88,6 +88,54 @@
     font-size: 12px;
 }
 
+/* =======================================================
+   ===== TABLE DİALOG  ===== 
+======================================================= */
+
+.dialog-box{
+    width:380px;
+    max-width:95vw;
+    background:linear-gradient(
+        180deg,
+        rgba(24,33,52,.98),
+        rgba(14,19,32,.98)
+    );
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+
+.dialog-title{
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.dialog-player{
+    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.dialog-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+}
+
+.dialog-buttons button{
+    min-width:42px;
+    height:40px;
+}
+
+.dialog-buttons button.pass{
+    min-width:56px;
+    border-color:#ff7d7d;
+}
 
 /* =======================================================
    ===== AYARLAR PENCERESİ ===== 
@@ -159,6 +207,39 @@
 
 
 /* =======================================================
+   Edu Control
+======================================================= */
+
+.edu-controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    margin:10px 0;
+}
+
+.edu-controls-3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin:10px 0 14px 0;
+}
+
+.edu-controls-3 button{
+    width:100%;
+    padding:8px 4px;
+    font-size:12px;
+}
+
+#devLogContent{
+    display:none;
+}
+
+#devLogContent.open{
+    display:block;
+}
+
+
+/* =======================================================
    APP LAYOUT
 ======================================================= */
 
@@ -177,13 +258,13 @@
    TOP BAR
 ======================================================= */
 
-    .topbar, .bottombar, .sidepanel, .center, .seat {
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-    }
+    .topbar,.seat {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
 
     .topbar {
       display: flex;
@@ -263,55 +344,26 @@ select option{
 }
 
 .table-dialog{
-
-    position:absolute;
-
-    inset:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    z-index:20;
-
-    pointer-events:none;
-
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: none;
 }
 
 .table-dialog.hidden{
-
     display:none;
-
 }
 
 .table-dialog .dialog-box{
-
     pointer-events:auto;
-
 }
 
 /* =======================================================
    SIDEPANEL
 ======================================================= */
-    .sidepanel{
-    display:grid;
-    grid-template-rows:auto auto 1fr;
-    gap:8px;
-    min-height:0;
-}
-
-
- .sidepanel h2 {
-    font-size: 13px;
-}
-
-.sidepanel button,
-.sidepanel input {
-    font-size: 12px;
-    padding: 6px 8px;
-}
 
 .saved-item .name,
 .log-item,
@@ -343,23 +395,6 @@ select option{
 }
 
 
-.pill {
-    padding: 6px 13px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: var(--text);
-    font-size: 11px;
-}
-
-    .pill strong { color: white; }
-    .pill.current { border-color: rgba(255,209,102,0.45); background: rgba(255,209,102,0.10); }
-    .pill.good { border-color: rgba(124,242,164,0.38); background: rgba(124,242,164,0.10); }
-    .pill.bad { border-color: rgba(255,107,107,0.38); background: rgba(255,107,107,0.10); 
-}
-
-
-
 /* =======================================================
    TABLE
 ======================================================= */
@@ -373,16 +408,6 @@ select option{
       align-items: center;
       justify-content: space-between;
     }
-
-    .status-left,
-    .status-right {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    font-size: 12px;
-}
-
 
  
 /* =======================================================
@@ -409,14 +434,6 @@ select option{
     min-height: 0;
     align-items: center;
 }
-
-    .stack {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 12px;
-      min-height: 0;
-    }
-
 
 /* =======================================================
    SEATS
@@ -475,10 +492,7 @@ select option{
     font-weight: 600;
     text-align: left;
     }
-    .seat-name .team {
-      font-size: 12px;
-      color: var(--muted);
-    }
+
 .count-area {
     display: flex;
     align-items: center;
@@ -664,13 +678,10 @@ select option{
 ======================================================= */
 
 
-    .played-area {
+    .played-area{
     background: linear-gradient(180deg, rgba(16,24,38,.95), rgba(10,14,24,.95));
     border-radius: var(--radius);
     border: 1px dashed rgba(255,255,255,0.14);
-    min-height: 180px;
-    padding: 10px;
-    gap: 12px;
     display: grid;
     grid-template-rows: auto auto auto;
     min-height: 160px;
@@ -678,7 +689,7 @@ select option{
     gap: 8px;
     align-items: center;
     justify-items: center;
-    position:relative;
+    position: relative;
 }
 
    .trick-grid {
@@ -710,10 +721,6 @@ select option{
       color: var(--muted);
     }
 
-    .trick-slot .played {
-      min-width: 52px;
-    }
-
     .trick-slot.leader {
       border-color: rgba(110,231,255,0.30);
       background: rgba(110,231,255,0.08);
@@ -729,27 +736,9 @@ select option{
       background: rgba(255,209,102,0.10);
     }
 
-.center-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: center;
-    align-items: center;
-}
-
-.teams,
-.meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
-}
-
-
-
-
-/* Legacy - v6.0
-   Kullanım kontrol edilmeden silmeyin. */
+/* =======================================================
+   GAME PANEL
+======================================================= */
 .game-panel{
     padding:12px;
     min-height:0;
@@ -779,40 +768,15 @@ select option{
 
 .panel-box h2{
     margin:0 0 5px 0;
-
     font-size:13px;
-
     font-weight:700;
-
     color:#f5f5f5;
-
     letter-spacing:.2px;
 }
 
-    .panel-row {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 4px;
-}
-
-
-
-.saved-list{
+   .saved-list{
     max-height: 400px;
     overflow-y: auto;
-}
-
-
-.log{
-    flex:1;
-    overflow:auto;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-    padding-right:2px;
-    min-height:0;
 }
 
     .saved-item {
@@ -843,18 +807,6 @@ select option{
       border: 1px solid rgba(255,255,255,0.06);
       line-height: 1.35;
     }
-
-    .footer {
-      color: var(--muted);
-      font-size: 12px;
-      padding: 0 4px 2px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
 
 .left-panel{
     width:240px;
@@ -911,53 +863,21 @@ select option{
     padding:12px;
 }
 
-.score-title{
-
-    text-align:center;
-
-    font-size:16px;
-
-    font-weight:bold;
-
-    margin-bottom:12px;
-
-    color:#ffd54a;
-}
-
-.score-row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    padding:8px 0;
-
-    border-bottom:1px solid rgba(255,255,255,.08);
-
-    font-size:15px;
-}
 
 .score-target{
 
     margin-top:12px;
-
     text-align:center;
-
     font-weight:bold;
-
     color:#8be98b;
 }
 
 .score-table{
 
     width:100%;
-
     border-collapse:collapse;
-
     margin-top:8px;
-
     font-size:13px;
-
     table-layout:fixed;
 
 }
@@ -971,9 +891,7 @@ select option{
 .score-table th{
 
     padding:4px 2px;
-
     text-align:center;
-
     font-weight:600;
 
 }
@@ -987,7 +905,6 @@ select option{
 .score-table td{
 
     padding:4px 2px;
-
     text-align:center;
 
 }
@@ -1001,9 +918,13 @@ select option{
 .score-table tbody tr:hover{
 
     background:rgba(255,255,255,.08);
-
     cursor:pointer;
 
+}
+
+.score-table-wrap{
+    max-height: 430px;
+    overflow-y: auto;
 }
 
 /* =======================================================
@@ -1012,167 +933,48 @@ select option{
 
 .toast{
     position:fixed;
-
     left:50%;
     top:38%;
-
     min-width:320px;
     max-width:500px;
-
     padding:14px 22px;
-
     border-radius:14px;
-
     background:rgba(12,18,30,.96);
-
     border:1px solid rgba(255,255,255,.15);
-
     box-shadow:0 10px 30px rgba(0,0,0,.45);
-
     color:var(--text);
-
     font-size:16px;
     font-weight:700;
-
     text-align:center;
-
     opacity:0;
-
     pointer-events:none;
-
     transition:
         opacity .2s ease,
         transform .2s ease;
-
-transform:
+    transform:
         translate(-50%,-50%)
         scale(.92);
-
     z-index:10000;
 }
 
 .toast.show{
 
     opacity:1;
-
     transform:
         translate(-50%,-50%)
         scale(1);
 
 }
 
-
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .legend span {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
     .mini {
       font-size: 12px;
       color: var(--muted);
-    }
-
-    .inline-input{
-    width:80px;
 }
+
 
     .hidden {
       display: none !important;
-    }
-
-
-
-
-
-/* =======================================================
-   BID MODAL
-======================================================= */
-
-.game-dialog.hidden{
-    display:none;
 }
-
-.game-dialog{
-    width:100%;
-    max-width:340px;
-    margin:auto;
-    background:rgba(0,0,0,.55);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-}
-
-.dialog-box{
-    width:380px;
-    max-width:95vw;
-    background:linear-gradient(
-        180deg,
-        rgba(24,33,52,.98),
-        rgba(14,19,32,.98)
-    );
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:22px;
-    padding:20px;
-    box-shadow:0 20px 60px rgba(0,0,0,.45);
-}
-
-
-.dialog-title{
-    text-align:center;
-    font-size:16px;
-    font-weight:700;
-    margin-bottom:20px;
-}
-
-.dialog-player{
-    text-align:center;
-    font-size:18px;
-    font-weight:700;
-    margin-bottom:20px;
-}
-
-.dialog-buttons{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-}
-
-.dialog-buttons button{
-    min-width:42px;
-    height:40px;
-}
-
-.dialog-buttons button.pass{
-    min-width:56px;
-    border-color:#ff7d7d;
-}
-
-
-
-#bidPanel{
-    position:absolute;
-    left:45%;
-    top:467px;
-    transform:translateX(-50%);
-    z-index:50;
-}
-
-#bidPanel.hidden{
-    display:none;
-}
-
-
-
-
 
 
 /* =======================================================
@@ -1184,14 +986,10 @@ transform:
 
     position:fixed;
     inset:0;
-
     background:rgba(0,0,0,.75);
-
     display:flex;
-
     justify-content:center;
     align-items:center;
-
     z-index:99999;
 }
 
@@ -1204,19 +1002,12 @@ transform:
 .match-window{
 
     width:425px;
-
     max-width:92%;
-
     background:#232323;
-
     border:3px solid #d8af37;
-
     border-radius:18px;
-
     padding:35px;
-
     text-align:center;
-
     box-shadow:0 0 35px rgba(255,215,0,.55);
 
 }
@@ -1224,11 +1015,8 @@ transform:
 .match-title{
 
     font-size:34px;
-
     color:#FFD700;
-
     font-weight:bold;
-
     margin-bottom:25px;
 
 }
@@ -1236,9 +1024,7 @@ transform:
 .match-winner{
 
     font-size:28px;
-
     color:white;
-
     margin-bottom:20px;
 
 }
@@ -1246,11 +1032,8 @@ transform:
 .match-score{
 
     font-size:42px;
-
     color:#7CFC00;
-
     font-weight:bold;
-
     margin-bottom:30px;
 
 }
@@ -1258,9 +1041,7 @@ transform:
 .match-buttons{
 
     display:flex;
-
     justify-content:center;
-
     gap:18px;
 
 }
@@ -1268,15 +1049,10 @@ transform:
 .match-buttons button{
 
     min-width:150px;
-
     padding:12px;
-
     font-size:18px;
-
     border:none;
-
     border-radius:8px;
-
     cursor:pointer;
 
 }
@@ -1286,13 +1062,9 @@ transform:
 .final-score-row{
 
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     font-size:28px;
-
     margin:22px 0;
 
 }
@@ -1300,7 +1072,6 @@ transform:
 .final-score-row span:first-child{
 
     color:#ffffff;
-
     font-weight:600;
 
 }
@@ -1308,9 +1079,7 @@ transform:
 .score-red{
 
     color:#ff4d4d;
-
     font-size:34px;
-
     font-weight:700;
 
 }
@@ -1318,9 +1087,7 @@ transform:
 .score-green{
 
     color:#67e34d;
-
     font-size:34px;
-
     font-weight:700;
 
 }
@@ -1328,22 +1095,9 @@ transform:
 #matchScore hr{
 
     border:none;
-
     border-top:1px solid rgba(255,255,255,.18);
-
     margin:18px 0;
 
-}
-
-
-/* =======================================================
-   DEVELOPMENT CONTROLS
-======================================================= */
-
-.status-left{
-    display:flex;
-    align-items:center;
-    gap:12px;
 }
 
 
@@ -1356,9 +1110,7 @@ transform:
 
     display:grid;
     grid-template-columns:1fr 1fr;
-
     gap:6px;
-
     margin-top:6px;
 
 }
@@ -1372,7 +1124,6 @@ transform:
 .center-btn{
 
     text-align:center;
-
     margin:8px 0;
 
 }
@@ -1380,9 +1131,7 @@ transform:
 .panel-sep{
 
     margin:16px 0;
-
     border:none;
-
     border-top:1px solid rgba(255,255,255,.12);
 
 }
@@ -1390,9 +1139,7 @@ transform:
 .swap-header{
 
     text-align:center;
-
     font-weight:700;
-
     margin-bottom:6px;
 
 }
@@ -1400,9 +1147,7 @@ transform:
 .swap-selects{
 
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
     gap:10px;
 
 }
@@ -1410,9 +1155,7 @@ transform:
 .swap-selects label{
 
     display:block;
-
     margin-bottom:5px;
-
     font-size:12px;
 
 }
@@ -1436,25 +1179,13 @@ transform:
 
 
 .collapse-title{
-
     cursor:pointer;
-
     user-select:none;
-
-}
-
-.collapse-title{
-
-    cursor:pointer;
-
     transition:.2s;
-
 }
 
 .collapse-title:hover{
-
     color:#ffd86b;
-
 }
 
 
@@ -1483,15 +1214,6 @@ transform:
     <div class="controls">
       <button id="settingsBtn">⚙️ Ayarlar</button>
       <button id="startMatchBtn" class="success">🟢 Oyunu Başlat</button>
-      <button id="showAllBtn">Tüm Eller Aç</button>
-      <button class="primary" id="dealBtn">Yeni El Dağıt</button>
-      <button id="bidStartBtn">İhale Başlat</button>
-      <button id="startBtn">Eli Başlat</button>
-      <button id="resetBtn">Bu Eli Sıfırla</button>
-      <button id="undoBtn">Geri Al</button>
-      <button id="redoBtn">İleri Al</button>
-      <button id="saveBtn">Eli Kaydet</button>
-      <button class="ghost" id="clearSavedBtn">Kayıtları Temizle</button>
     </div>
   </div>
 
@@ -1503,17 +1225,18 @@ transform:
 <div id="dealInfo" class="deal-info">
     <div id="dealerInfo">Dağıtan : -</div>
     <div id="mandatoryInfo">Mecburcu : -</div>
-
     <div id="bidInfo">İhale: -</div>
     <div id="trumpInfo">Koz: -</div>
 </div>
 
-       <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
+     <!-- ===== SKOR TABLOSU BAŞLANGIÇ ===== -->
 <div class="score-board">
 
     <div class="score-target">
         <span id="targetScore"></span>'de Biter
     </div>
+
+<div class="score-table-wrap">
 
     <table class="score-table">
 
@@ -1535,58 +1258,26 @@ transform:
 
     </table>
 
+  </div>
+
 </div>
 <!-- ===== SKOR TABLOSU BİTİŞ ===== -->
 
+<!-- ===== KAYDEDİLEN ELLER BAŞLANGIÇ ===== -->
+<div class="panel-box">
 
-    <div class="panel-box">
-        <h2>📋 Geliştirme Günlüğü</h2>
-        <div class="version-list">
+    <h2 class="collapse-title" id="savedHandsToggle">
+        ▶ Kaydedilen Eller
+    </h2>
 
-    <div class="version-item">
-        <strong>v6.2 🚧</strong>
+    <div id="savedHandsContent">
 
-        <div class="version-popup">
-            <b>v6.2 — Geliştiriliyor</b>
-            <p>• Maç bitiş puanı seçimi</p>
-            <p>• Seçilebilir ihale sistemi</p>
-            <p>• Yeni ihale sistemi</p>
-            <p>• Yeni mecburcu sistemi</p>
-            <p>• Görsel iyileştirmeler</p>
-            <p>• Kod sadeleştirme</p>
-        </div>
-    </div>
+        <div class="saved-list" id="savedList"></div>
 
-    <div class="version-item">
-        <strong>v6.1 ✅</strong>
-
-        <div class="version-popup">
-            <b>v6.1 — Tamamlandı</b>
-            <p>• Claim sistemi</p>
-            <p>• Mecburi 7</p>
-            <p>• 4-3-3-3 gerçek kart dağıtımı</p>
-            <p>• Dağıtım animasyonu</p>
-            <p>• Dağıtan ve mecburcu sistemi</p>
-            <p>• Oyun ve arayüz düzeltmeleri</p>
-        </div>
-    </div>
-
-    <div class="version-item">
-        <strong>v6.0 ✅</strong>
-
-        <div class="version-popup">
-            <b>v6.0 — Tamamlandı</b>
-            <p>• Eğitim ve Oyun Modu</p>
-            <p>• İhale sistemi</p>
-            <p>• Skor sistemi</p>
-            <p>• Geri / İleri</p>
-            <p>• Kaydedilen eller</p>
-            <p>• Kart sürükle bırak</p>
-        </div>
     </div>
 
 </div>
-    </div>
+<!-- ===== KAYDEDİLEN ELLER BİTİŞ ===== -->
 
     </div>
     <!-- ===== SOL PANEL BİTİŞ ===== -->
@@ -1696,6 +1387,35 @@ transform:
 <!-- ===== SAĞ PANEL BAŞLANGIÇ ===== -->
 <div class="right-panel">
 
+<!-- ===== EĞİTİM KONTROLLERİ BAŞLANGIÇ ===== -->
+<div class="panel-box">
+
+    <h2>🎓 Eğitim Kontrolleri</h2>
+
+    <div class="edu-controls-3">
+        <button id="dealBtn">🃏 Yeni El Dağıt</button>
+        <button id="startBidBtn">📝 İhale Başlat</button>
+        <button id="startGameBtn">▶ Bu Eli Başlat</button>
+    </div>
+
+<div class="edu-controls">
+    <button id="showAllBtn">👁 Tüm Elleri Aç-Kapat</button>
+    <button id="resetBtn">🔄 Bu Eli Sıfırla</button>
+</div>
+
+<div class="edu-controls">
+    <button id="undoBtn">↩ Geri Al</button>
+    <button id="redoBtn">↪ İleri Al</button>
+</div>
+
+<div class="edu-controls">
+    <button id="saveBtn">💾 Eli Kaydet</button>
+    <button id="clearSavedBtn" class="ghost">🗑 Kayıtları Temizle</button>
+</div>
+
+
+</div>
+<!-- ===== EĞİTİM KONTROLLERİ BİTİŞ ===== -->
 
 <!-- ===== EL DAĞITMA SEÇENEKLERİ BAŞLANGIÇ ===== -->
 <div class="panel-box">
@@ -1710,16 +1430,13 @@ transform:
 
             <label><input type="checkbox" id="lock0"> Kuzey</label>
             <label><input type="checkbox" id="lock2"> Güney</label>
-
             <label><input type="checkbox" id="lock1"> Doğu</label>
             <label><input type="checkbox" id="lock3"> Batı</label>
 
         </div>
 
         <div class="center-btn">
-            <button id="partialDealBtn">
-             🔒Seçilen Eller Dışındaki Elleri Tekrar Dağıt
-            </button>
+            <button id="partialDealBtn">🔒Seçilen Eller Dışındaki Elleri Tekrar Dağıt</button>
         </div>
 
         <hr class="panel-sep">
@@ -1753,38 +1470,73 @@ transform:
         </div>
 
         <div class="center-btn">
+            <button id="swapHandsBtn">🔄 Seçilen Oyuncuların Ellerini Değiştir</button>
+        </div>
 
-            <button id="swapHandsBtn">
-                🔄 Seçilen Oyuncuların Ellerini Değiştir
-            </button>
+    </div>
+</div>
+<!-- ===== EL DAĞITMA SEÇENEKLERİ BİTİŞ ===== -->
+
+
+<!-- ===== GELİŞTİRME GÜNLÜĞÜ BAŞLANGIÇ ===== -->
+<div class="panel-box">
+
+    <h2 class="collapse-title" id="devLogToggle">
+        ▶ Geliştirme Günlüğü
+    </h2>
+
+    <div id="devLogContent">
+
+        <div class="version-list">
+
+            <div class="version-item">
+                <strong>v6.2 ✅</strong>
+
+                <div class="version-popup">
+                    <b>v6.2 — Tamamlandı</b>
+                    <p>• Maç bitiş puanı seçimi</p>
+                    <p>• Seçilebilir ihale sistemi</p>
+                    <p>• Yeni ihale sistemi</p>
+                    <p>• Yeni mecburcu sistemi</p>
+                    <p>• Görsel iyileştirmeler</p>
+                    <p>• Kod sadeleştirme</p>
+                </div>
+            </div>
+
+            <div class="version-item">
+                <strong>v6.1 ✅</strong>
+
+                <div class="version-popup">
+                    <b>v6.1 — Tamamlandı</b>
+                    <p>• Claim sistemi</p>
+                    <p>• Mecburi 7</p>
+                    <p>• 4-3-3-3 gerçek kart dağıtımı</p>
+                    <p>• Dağıtım animasyonu</p>
+                    <p>• Dağıtan ve mecburcu sistemi</p>
+                    <p>• Oyun ve arayüz düzeltmeleri</p>
+                </div>
+            </div>
+
+            <div class="version-item">
+                <strong>v6.0 ✅</strong>
+
+                <div class="version-popup">
+                    <b>v6.0 — Tamamlandı</b>
+                    <p>• Eğitim ve Oyun Modu</p>
+                    <p>• İhale sistemi</p>
+                    <p>• Skor sistemi</p>
+                    <p>• Geri / İleri</p>
+                    <p>• Kaydedilen eller</p>
+                    <p>• Kart sürükle bırak</p>
+                </div>
+            </div>
 
         </div>
 
     </div>
 
 </div>
-<!-- ===== EL DAĞITMA SEÇENEKLERİ BİTİŞ ===== -->
-
-
-
-
-
-
-<!-- ===== KAYDEDİLEN ELLER BAŞLANGIÇ ===== -->
-<div class="panel-box">
-
-    <h2 class="collapse-title" id="savedHandsToggle">
-        ▶ Kaydedilen Eller
-    </h2>
-
-    <div id="savedHandsContent">
-
-        <div class="saved-list" id="savedList"></div>
-
-    </div>
-
-</div>
-<!-- ===== KAYDEDİLEN ELLER BİTİŞ ===== -->
+<!-- ===== GELİŞTİRME GÜNLÜĞÜ BİTİŞ ===== -->
 
 <div class="toast" id="toast"></div>
 
@@ -1817,78 +1569,53 @@ const el = (id) => document.getElementById(id);
 ======================================================= */
 const state = {
 
-   match: {
-
+    match: {
     running: false,
-
     autoMode: false,
-
     status: "idle"
-
     },
 
     mandatoryPlayer: null,
     currentDealer: null,
-
     mandatoryRule: "maker",
-
     claimUsed: false,
     claimMode: "classic",
-
     dealNo: 0,
     dealer: null,
     deckSeed: null,
-
     dealPattern: "4-3-3-3",
     cardBackTheme: "blue",
-
     hands: [[], [], [], []],
-
     selectedTrump: "",
     leader: 0,
     contractInfo: "",
-
     currentTurn: 0,
     currentTrick: [],
     completedTricks: [],
-
     history: [],
     redo: [],
-
     revealedSeat: null,
     lockedSeats: [],
-
     trickAnimating: false,
-
     matchTarget: 41,
     extraDeal: false,
-
     phase: "distribution",
-
     winnerOfLastTrick: null,
-
     savedHands: [],
-
     scores: {
         A: 0,
-        B: 0
-    },
-
+        B: 0    },
     matchScore: {
         A: 0,
-        B: 0
-    },
-
+        B: 0    },
     bidStarter: null,
-
     bid: {
         currentBid: null,
         winner: null,
         currentPlayer: null,
         passed: [false, false, false, false],
         activePlayers: [true,true,true,true],
-        passCount: 0
-    }
+        passCount: 0    }
 };
 
 
@@ -2039,11 +1766,31 @@ function setupCollapsiblePanels(){
 
     });
 
+// ===== Geliştirme Günlüğü =====
+
+const devToggle =
+    document.getElementById("devLogToggle");
+
+const devContent =
+    document.getElementById("devLogContent");
+
+// Varsayılan kapalı
+devToggle.textContent =
+    "▶ Geliştirme Günlüğü";
+
+devToggle.addEventListener("click",()=>{
+
+    devContent.classList.toggle("open");
+
+    devToggle.textContent =
+        devContent.classList.contains("open")
+        ? "▼ Geliştirme Günlüğü"
+        : "▶ Geliştirme Günlüğü";
+
+});
+
 }
  
-
-
-
 
 function lockSeat(player){
 
@@ -2137,7 +1884,7 @@ onHandFinished(){
    BUTTON EVENTS
 ======================================================= */
 
-  function setupButtons() {
+ function setupButtons() {
 
 el("startMatchBtn").addEventListener("click", () => {
 
@@ -2311,10 +2058,9 @@ if (!el("tableDialog").classList.contains("hidden")) {
     el("redoBtn").addEventListener("click", redo);
     el("saveBtn").addEventListener("click", saveHand);
     el("clearSavedBtn").addEventListener("click", clearSaved);
-    el("bidStartBtn").addEventListener("click", openBidModal);
-    el("startBtn").addEventListener("click", startGame);
-
-  }
+    el("startBidBtn").addEventListener("click", openBidModal);
+    el("startGameBtn").addEventListener("click", startGame);
+}
 
 
 /* =======================================================
@@ -4020,16 +3766,25 @@ function finishForcedSevenRefuse(){
             ? "B"
             : "A";
 
-    // Puan
+    // Kahvehane kuralı
     state.matchScore[bidderTeam] -= 7;
     state.matchScore[opponentTeam] += 7;
+
+    // El skor tablosu
+    state.scores[bidderTeam] = 0;
+    state.scores[opponentTeam] = 7;
 
     addHistory(
         getSeatLabel(state.bid.winner) +
         " mecburi 7'yi oynamadı."
     );
 
+    addScoreTableRow();
+
     render();
+
+    // Maç bitmiş mi?
+    checkMatchWinner();
 
     if(state.match.running){
 
